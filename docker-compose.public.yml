@@ -1,3 +1,5 @@
+name: sufi
+
 services:
   db:
     image: postgres:16-alpine
@@ -67,3 +69,4 @@ networks:
 
 volumes:
   postgres_data:
+    name: sufi_postgres_data

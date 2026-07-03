@@ -1,6 +1,8 @@
 # Local development only (next dev + HMR on port 3000).
 # For public/server deployment behind Cloudflare, use docker-compose.public.yml instead.
 
+name: sufi
+
 services:
   db:
     image: postgres:16-alpine
@@ -43,6 +45,9 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
+      # Seed only when explicitly requested (first setup). Re-seeding on every
+      # restart overwrites catalog edits and uploaded image paths in the DB.
+      RUN_DB_SEED: ${RUN_DB_SEED:-false}
     volumes:
       - .:/app
       - /app/node_modules
@@ -50,7 +55,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma generate && npx prisma migrate deploy && npx prisma db seed && npm run dev"
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && if [ \"$$RUN_DB_SEED\" = \"true\" ]; then npx prisma db seed; fi && npm run dev"
 
 volumes:
   postgres_data:
+    name: sufi_postgres_data
