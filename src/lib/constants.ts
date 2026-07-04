@@ -8,7 +8,7 @@ export const EMAIL_BRAND_NAME = "Hytera Radios - Operated by WirelessCom.ca Inc.
 
 export const PARENT_COMPANY = "WirelessCom.ca Inc.";
 export const PARENT_COMPANY_URL = "https://www.wirelesscom.org/";
-export const SITE_DOMAIN = "Hyteraradio.ca";
+export const SITE_DOMAIN = "Hyteraradios.ca";
 
 export const SITE_ADDRESS_LINES = [
   "WirelessCom.ca Inc.",
