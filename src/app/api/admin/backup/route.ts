@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isSuperAdminRole } from "@/lib/admin-guard";
-import { createBackupArchive } from "@/lib/backup";
+import { createBackupArchive, backupErrorMessage } from "@/lib/backup";
 import { recordAudit } from "@/lib/audit";
 import { getRequestIp } from "@/lib/request-ip";
 
@@ -52,6 +52,6 @@ export async function GET() {
     }
   } catch (err) {
     console.error("Backup failed", err);
-    return new Response("Backup failed. Check server logs.", { status: 500 });
+    return new Response(backupErrorMessage(err), { status: 500 });
   }
 }

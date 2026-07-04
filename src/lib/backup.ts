@@ -37,6 +37,29 @@ const UPLOAD_PATHS = [
   "uploads",
 ];
 
+const MISSING_TOOL_MESSAGE =
+  "pg_dump or tar not found. Rebuild the app image (Dockerfile installs postgresql-client).";
+
+/** Strip Prisma-only query params (e.g. ?schema=public) before passing URL to pg_dump. */
+export function databaseUrlForPgTools(databaseUrl: string): string {
+  const url = new URL(databaseUrl);
+  url.search = "";
+  return url.toString();
+}
+
+/** Safe client-facing message; never includes credentials from DATABASE_URL. */
+export function backupErrorMessage(err: unknown): string {
+  const message = err instanceof Error ? err.message : String(err);
+  if (
+    message.includes(MISSING_TOOL_MESSAGE) ||
+    /pg_dump not found|tar not found/i.test(message) ||
+    /ENOENT.*\b(pg_dump|tar)\b/i.test(message)
+  ) {
+    return "Backup tools not installed. Rebuild the Docker image.";
+  }
+  return "Backup failed. Check server logs.";
+}
+
 function run(
   command: string,
   args: string[],
@@ -55,6 +78,19 @@ function run(
     child.on("close", (code) => {
       if (code === 0) resolve();
       else reject(new Error(`${command} exited with code ${code}: ${stderr.trim()}`));
+    });
+  });
+}
+
+function requireCommand(command: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("sh", ["-c", `command -v ${command}`], {
+      stdio: "ignore",
+    });
+    child.on("error", () => reject(new Error(MISSING_TOOL_MESSAGE)));
+    child.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(MISSING_TOOL_MESSAGE));
     });
   });
 }
@@ -100,6 +136,9 @@ export async function createBackupArchive(): Promise<BackupArtifact> {
     throw new Error("DATABASE_URL is not set.");
   }
 
+  await requireCommand("pg_dump");
+  await requireCommand("tar");
+
   const cwd = process.cwd();
   const work = await mkdtemp(path.join(os.tmpdir(), "backup-"));
 
@@ -109,15 +148,19 @@ export async function createBackupArchive(): Promise<BackupArtifact> {
   const fileName = `backup-${stamp}.tar.gz`;
   const archivePath = path.join(work, fileName);
 
+  const pgUrl = databaseUrlForPgTools(databaseUrl);
+
   // 1. Database dump (clean + if-exists so restore is idempotent).
   await run("pg_dump", [
     "--no-owner",
     "--no-privileges",
     "--clean",
     "--if-exists",
+    "-n",
+    "public",
     "-f",
     dumpPath,
-    databaseUrl,
+    pgUrl,
   ]);
 
   // 2. Env snapshot.
@@ -136,17 +179,10 @@ export async function createBackupArchive(): Promise<BackupArtifact> {
   }
 
   // 4. Build archive: db.sql + .env.backup from work dir, uploads from app cwd.
-  const tarArgs = [
-    "-czf",
-    archivePath,
-    "-C",
-    work,
-    "db.sql",
-    ".env.backup",
-    "-C",
-    cwd,
-    ...existingUploads,
-  ];
+  const tarArgs = ["-czf", archivePath, "-C", work, "db.sql", ".env.backup"];
+  if (existingUploads.length > 0) {
+    tarArgs.push("-C", cwd, ...existingUploads);
+  }
   await run("tar", tarArgs);
 
   return {
