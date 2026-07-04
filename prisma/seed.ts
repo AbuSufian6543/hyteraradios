@@ -51,6 +51,11 @@ type SeedProduct = {
 };
 
 async function main() {
+  const seedForce = process.env.SEED_FORCE === "true";
+  if (seedForce) {
+    console.log("SEED_FORCE=true — existing catalog products will be overwritten.");
+  }
+
   const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123";
   const passwordHash = await bcrypt.hash(adminPassword, 12);
 
@@ -875,6 +880,14 @@ async function main() {
       ...base
     } = productData;
 
+    const existing = await prisma.product.findUnique({
+      where: { slug: base.slug },
+      select: { id: true },
+    });
+    if (existing && !seedForce) {
+      continue;
+    }
+
     // Derive options, variants, and pricing.
     let options: SeedOption[] | undefined;
     let variants: SeedVariant[] | undefined;
@@ -983,12 +996,14 @@ async function main() {
     }
   }
 
-  // Hide any products from earlier seeds that are no longer in the catalog.
-  const activeSlugs = products.map((p) => p.slug);
-  await prisma.product.updateMany({
-    where: { slug: { notIn: activeSlugs }, status: "ACTIVE" },
-    data: { status: "DRAFT" },
-  });
+  // Hide legacy seed products no longer in the catalog (force refresh only).
+  if (seedForce) {
+    const activeSlugs = products.map((p) => p.slug);
+    await prisma.product.updateMany({
+      where: { slug: { notIn: activeSlugs }, status: "ACTIVE" },
+      data: { status: "DRAFT" },
+    });
+  }
 
   const reviews = [
     { author: "Jessica Chapman", content: "Great radios at a reasonable price, and they shipped quickly! The team helped me pick the right model for our warehouse.", rating: 5, featured: true },
@@ -997,8 +1012,13 @@ async function main() {
     { author: "Matt A.", content: "Bought these for my team across multiple locations. The Hytera DMR fleet has been rock solid.", rating: 5, featured: true },
   ];
 
-  await prisma.review.deleteMany({ where: { featured: true } });
-  await prisma.review.createMany({ data: reviews });
+  const featuredReviewCount = await prisma.review.count({ where: { featured: true } });
+  if (seedForce || featuredReviewCount === 0) {
+    if (seedForce) {
+      await prisma.review.deleteMany({ where: { featured: true } });
+    }
+    await prisma.review.createMany({ data: reviews });
+  }
 
   console.log("Seed completed successfully.");
   console.log(`Admin login: ${adminEmail} / ${adminPassword}`);

@@ -284,6 +284,58 @@ POSTGRES_PASSWORD=<strong-password>
 
 Then start with `-f docker-compose.db-tunnel.yml`. Prefer the SSH tunnel instead.
 
+## Docker: keeping your database safe
+
+Postgres data lives in the Docker volume `sufi_postgres_data`. Admin edits, orders, and uploads persist across restarts **as long as you do not delete that volume**.
+
+Use the same compose flags for every command on the live server:
+
+```bash
+DC="docker compose --env-file .env.public -f docker-compose.public.yml"
+```
+
+### Safe (data kept)
+
+```bash
+$DC restart                    # quick restart
+$DC restart app                # restart app only
+$DC up -d --build              # deploy code changes (./deploy-public.sh does this)
+$DC up -d                      # apply .env changes without rebuild
+$DC stop && $DC start          # stop and start
+```
+
+The app entrypoint runs **migrations only** on start — it never auto-seeds. Existing products are not overwritten if you run `prisma db seed` manually (unless you set `SEED_FORCE=true`).
+
+### Unsafe (data lost or overwritten)
+
+```bash
+$DC down -v                    # DELETES the database volume — never use on live
+docker volume rm sufi_postgres_data
+SEED_FORCE=true npx prisma db seed   # overwrites existing catalog products
+./scripts/restore.sh backup.tar.gz   # replaces DB by design (restore only)
+```
+
+### First-time empty database
+
+```bash
+$DC exec app npx prisma db seed
+```
+
+### Deploy latest code on the live server
+
+```bash
+chmod +x scripts/update-live.sh
+./scripts/update-live.sh
+```
+
+This pulls from git, rebuilds, and verifies startup logs do not show auto-seeding.
+
+### Full demo catalog refresh (dev/staging only)
+
+```bash
+$DC exec -e SEED_FORCE=true app npx prisma db seed
+```
+
 ## Useful Commands
 
 ```bash
@@ -297,6 +349,9 @@ npm run extract:product-images -- --pdf "path/to/pricebook.pdf"  # Extract image
 # Public testing (Cloudflare)
 ./deploy-public.sh
 # or: docker compose --env-file .env.public -f docker-compose.public.yml up -d --build
+
+# Live server quick restart (keeps database)
+# docker compose --env-file .env.public -f docker-compose.public.yml restart
 
 # Production (Caddy + own TLS)
 docker compose -f docker-compose.prod.yml up -d --build
@@ -347,10 +402,12 @@ Page-to-product mapping is in `scripts/pricebook-image-map.json`. Debug a PDF pa
 python scripts/extract-pricebook-images.py --pdf "path\to\pricebook.pdf" --list-page 3
 ```
 
-After extracting or updating images, re-seed so the database picks up paths:
+After extracting or updating images, refresh DB image paths (skips products that already exist):
 
 ```bash
-docker compose exec app npx prisma db seed
+docker compose --env-file .env.public -f docker-compose.public.yml exec app npx prisma db seed
+# Full overwrite of existing catalog (use with care):
+# docker compose ... exec -e SEED_FORCE=true app npx prisma db seed
 # or locally:
 npm run db:seed
 ```

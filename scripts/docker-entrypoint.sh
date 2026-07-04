@@ -41,14 +41,5 @@ if ! su-exec nextjs npx prisma migrate deploy; then
   exit 1
 fi
 
-if [ "$RUN_DB_SEED" = "true" ]; then
-  echo "[entrypoint] Seeding database (RUN_DB_SEED=true)..."
-  if ! su-exec nextjs npx prisma db seed; then
-    echo "[entrypoint] WARNING: 'prisma db seed' failed. Continuing without seed data."
-  fi
-else
-  echo "[entrypoint] Skipping database seed (set RUN_DB_SEED=true to seed on startup)."
-fi
-
 echo "[entrypoint] Starting Next.js on port ${PORT:-3000}..."
 exec su-exec nextjs node server.js
