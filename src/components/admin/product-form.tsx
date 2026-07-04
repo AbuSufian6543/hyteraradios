@@ -1,4 +1,5 @@
 import { saveProductAction } from "@/app/actions/admin";
+import { ProductSlugFields } from "@/components/admin/product-slug-fields";
 import { ProductImageManager } from "@/components/admin/product-image-manager";
 import { TagInput } from "@/components/admin/tag-input";
 import { Button } from "@/components/ui/button";
@@ -90,14 +91,10 @@ export async function ProductForm({ product }: ProductFormProps) {
       {product && <input type="hidden" name="id" value={product.id} />}
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <Label htmlFor="name">Product Name *</Label>
-          <Input id="name" name="name" defaultValue={product?.name ?? ""} required />
-        </div>
-        <div>
-          <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" defaultValue={product?.slug ?? ""} />
-        </div>
+        <ProductSlugFields
+          defaultName={product?.name ?? ""}
+          defaultSlug={product?.slug ?? ""}
+        />
         <div>
           <Label htmlFor="brand">Brand</Label>
           <Input id="brand" name="brand" defaultValue={product?.brand ?? ""} />

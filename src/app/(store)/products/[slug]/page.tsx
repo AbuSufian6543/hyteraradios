@@ -26,7 +26,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
+  if (!slug.trim()) return { title: "Product Not Found" };
+
+  const product = await prisma.product.findFirst({
     where: { slug, status: "ACTIVE" },
     select: {
       name: true,
@@ -67,9 +69,11 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (!slug.trim()) notFound();
+
   const currency = await getCurrency();
 
-  const product = await prisma.product.findUnique({
+  const product = await prisma.product.findFirst({
     where: { slug, status: "ACTIVE" },
     include: {
       options: {

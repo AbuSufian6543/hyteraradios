@@ -14,6 +14,15 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Derive a URL slug from form input, falling back to the entity name when blank. */
+export function resolveEntitySlug(
+  rawSlugInput: FormDataEntryValue | null | undefined,
+  name: string,
+): string {
+  const rawSlug = String(rawSlugInput ?? "").trim();
+  return slugify(rawSlug || name);
+}
+
 export function formatPrice(cents: number, currency: "CAD" | "USD"): string {
   const amount = cents / 100;
   return new Intl.NumberFormat(currency === "CAD" ? "en-CA" : "en-US", {

@@ -12,6 +12,10 @@ export function SavedToast({ message = "Changes saved successfully." }: { messag
     if (searchParams.get("saved") === "1") {
       showToast(message);
     }
+    const error = searchParams.get("error");
+    if (error) {
+      showToast(decodeURIComponent(error), "error");
+    }
   }, [searchParams, showToast, message]);
 
   return null;

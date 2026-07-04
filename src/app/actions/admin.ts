@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/utils";
+import { resolveEntitySlug } from "@/lib/utils";
 import { getActorOrThrow, isAdminRole } from "@/lib/admin-guard";
 import { recordAudit } from "@/lib/audit";
 import {
@@ -110,7 +110,31 @@ export async function saveProductAction(formData: FormData) {
 
   const id = formData.get("id") ? String(formData.get("id")) : null;
   const name = String(formData.get("name") ?? "").trim();
-  const slug = slugify(String(formData.get("slug") ?? name));
+  const slug = resolveEntitySlug(formData.get("slug"), name);
+  if (!slug) {
+    const error = encodeURIComponent(
+      "A valid slug is required (use letters or numbers in the product name).",
+    );
+    redirect(
+      id
+        ? `/admin/products/${id}/edit?error=${error}`
+        : `/admin/products/new?error=${error}`,
+    );
+  }
+
+  const slugConflict = await prisma.product.findFirst({
+    where: { slug, ...(id ? { id: { not: id } } : {}) },
+    select: { id: true },
+  });
+  if (slugConflict) {
+    const error = encodeURIComponent(`Another product already uses the slug "${slug}".`);
+    redirect(
+      id
+        ? `/admin/products/${id}/edit?error=${error}`
+        : `/admin/products/new?error=${error}`,
+    );
+  }
+
   const brand = String(formData.get("brand") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim();
   const shortDescription = String(formData.get("shortDescription") ?? "").trim() || null;
@@ -317,6 +341,8 @@ export async function saveProductAction(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/search");
+  revalidatePath(`/products/${slug}`);
   revalidatePath("/admin/products");
   redirect(`/admin/products/${productId}/edit?saved=1`);
 }
@@ -348,7 +374,7 @@ export async function saveCategoryAction(formData: FormData) {
 
   const id = formData.get("id") ? String(formData.get("id")) : null;
   const name = String(formData.get("name") ?? "").trim();
-  const slug = slugify(String(formData.get("slug") ?? name));
+  const slug = resolveEntitySlug(formData.get("slug"), name);
   const description = String(formData.get("description") ?? "").trim() || null;
   const image = String(formData.get("image") ?? "").trim() || null;
 
@@ -408,7 +434,7 @@ export async function saveIndustryAction(formData: FormData) {
 
   const id = formData.get("id") ? String(formData.get("id")) : null;
   const name = String(formData.get("name") ?? "").trim();
-  const slug = slugify(String(formData.get("slug") ?? name));
+  const slug = resolveEntitySlug(formData.get("slug"), name);
   const description = String(formData.get("description") ?? "").trim() || null;
   const image = String(formData.get("image") ?? "").trim() || null;
 
