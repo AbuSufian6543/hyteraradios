@@ -104,6 +104,69 @@ export async function submitProductReviewAction(
   return { success: true, message: "Thank you! Your review has been published." };
 }
 
+export async function createReviewAction(formData: FormData): Promise<ActionResult> {
+  const actor = await getActorOrThrow();
+
+  const author = String(formData.get("author") ?? "").trim();
+  const rating = parseRating(formData.get("rating"));
+  const content = parseContent(formData.get("content"));
+  const featured =
+    formData.get("featured") === "on" || formData.get("featured") === "true";
+  const homepageOnly =
+    formData.get("homepageOnly") === "on" ||
+    formData.get("homepageOnly") === "true";
+  const productId = homepageOnly
+    ? ""
+    : String(formData.get("productId") ?? "").trim();
+
+  if (!author) return { error: "Author is required." };
+  if (rating === null) return { error: "Rating must be between 1 and 5." };
+  if (!content) {
+    return {
+      error: `Review must be between ${MIN_CONTENT} and ${MAX_CONTENT} characters.`,
+    };
+  }
+
+  if (!productId && !featured) {
+    return {
+      error: "Select a product or mark as a homepage featured testimonial.",
+    };
+  }
+
+  if (productId) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+    });
+    if (!product) return { error: "Product not found." };
+  }
+
+  const created = await prisma.review.create({
+    data: {
+      author,
+      content,
+      rating,
+      featured: homepageOnly ? true : featured,
+      productId: productId || null,
+      userId: null,
+    },
+    include: { product: { select: { slug: true } } },
+  });
+
+  await recordAudit({
+    actor,
+    action: "CREATE",
+    entityType: "Review",
+    entityId: created.id,
+    summary: `Created manual review by ${created.author}`,
+    ipAddress: await getRequestIp(),
+  });
+
+  await revalidateReviewPaths(created);
+  revalidatePath("/admin/reviews");
+  return { success: true, message: "Review created." };
+}
+
 export async function updateReviewAction(formData: FormData): Promise<ActionResult> {
   const actor = await getActorOrThrow();
 

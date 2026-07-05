@@ -1,20 +1,27 @@
 import { requireAdmin } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { ReviewsManager, type ReviewRow } from "@/components/admin/reviews-manager";
+import { ReviewCreateForm } from "@/components/admin/review-create-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminReviewsPage() {
   await requireAdmin();
 
-  const reviews = await prisma.review.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 200,
-    include: {
-      product: { select: { name: true, slug: true } },
-      user: { select: { email: true } },
-    },
-  });
+  const [reviews, products] = await Promise.all([
+    prisma.review.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 200,
+      include: {
+        product: { select: { name: true, slug: true } },
+        user: { select: { email: true } },
+      },
+    }),
+    prisma.product.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, slug: true, status: true },
+    }),
+  ]);
 
   const rows: ReviewRow[] = reviews.map((r) => ({
     id: r.id,
@@ -37,9 +44,11 @@ export default async function AdminReviewsPage() {
           Reviews
         </h1>
         <p className="mt-1 text-slate-600 dark:text-slate-400">
-          Edit or remove customer and seed reviews. Featured reviews appear on the homepage.
+          Add, edit, or remove customer and manual reviews. Featured reviews appear on the
+          homepage.
         </p>
       </div>
+      <ReviewCreateForm products={products} />
       <ReviewsManager reviews={rows} />
     </div>
   );
