@@ -20,6 +20,7 @@ import {
   RotateCcw,
   FileBarChart,
   MessageSquare,
+  MessageSquareQuote,
   Images,
   DatabaseBackup,
   Signpost,
@@ -51,6 +52,7 @@ const baseLinks = [
   { href: "/admin/accounting/reports", label: "Reports", icon: FileBarChart },
   { href: "/admin/accounting/pnl", label: "P&L", icon: FileBarChart },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/reviews", label: "Reviews", icon: MessageSquareQuote },
   { href: "/admin/admins", label: "Admins", icon: ShieldCheck },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ] as const;

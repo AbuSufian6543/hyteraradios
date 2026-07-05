@@ -4,6 +4,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { formatItemDisplayName } from "@/lib/order-item-frequency";
+import {
+  isReviewableOrderStatus,
+} from "@/lib/product-reviews";
 
 export default async function OrderDetailPage({
   params,
@@ -30,6 +33,23 @@ export default async function OrderDetailPage({
 
   const invoice = order.invoices[0];
   const isPrint = sp.print === "1";
+  const canReviewOrder = isReviewableOrderStatus(order.status);
+
+  const productIds = [...new Set(order.items.map((item) => item.productId))];
+  const [products, existingReviews] = await Promise.all([
+    prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, slug: true },
+    }),
+    prisma.review.findMany({
+      where: { userId: session.user.id, productId: { in: productIds } },
+      select: { productId: true },
+    }),
+  ]);
+  const slugByProductId = new Map(products.map((p) => [p.id, p.slug]));
+  const reviewedProductIds = new Set(
+    existingReviews.map((r) => r.productId).filter(Boolean) as string[],
+  );
 
   return (
     <div className={`container-page py-10 ${isPrint ? "print:p-0" : ""}`}>
@@ -74,15 +94,33 @@ export default async function OrderDetailPage({
             </tr>
           </thead>
           <tbody>
-            {order.items.map((item) => (
+            {order.items.map((item) => {
+              const slug = slugByProductId.get(item.productId);
+              const showReviewLink =
+                canReviewOrder &&
+                slug &&
+                !reviewedProductIds.has(item.productId);
+
+              return (
               <tr key={item.id} className="border-b border-slate-100">
-                <td className="py-2">{formatItemDisplayName(item)}</td>
+                <td className="py-2">
+                  <div>{formatItemDisplayName(item)}</div>
+                  {showReviewLink && (
+                    <Link
+                      href={`/products/${slug}?tab=reviews`}
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      Write a review
+                    </Link>
+                  )}
+                </td>
                 <td className="py-2">{item.quantity}</td>
                 <td className="py-2 text-right">
                   {formatPrice(item.unitPriceCents * item.quantity, order.currency)}
                 </td>
               </tr>
-            ))}
+            );
+            })}
           </tbody>
         </table>
 

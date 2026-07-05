@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ProductDetailClient } from "@/components/products/product-detail-client";
 import { RelatedProducts } from "@/components/products/related-products";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { getProductReviewEligibility } from "@/lib/product-reviews";
 import { getCurrency } from "@/lib/currency-server";
 import { getProductPrice } from "@/lib/currency";
 import { getRelatedProducts } from "@/lib/related-products";
@@ -65,13 +67,17 @@ export async function generateMetadata({
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const { slug } = await params;
+  const sp = await searchParams;
   if (!slug.trim()) notFound();
 
   const currency = await getCurrency();
+  const session = await auth();
 
   const product = await prisma.product.findFirst({
     where: { slug, status: "ACTIVE" },
@@ -93,6 +99,13 @@ export default async function ProductPage({
   });
 
   if (!product) notFound();
+
+  const reviewEligibility = await getProductReviewEligibility(
+    session?.user?.id,
+    product.id,
+  );
+
+  const initialTab = sp.tab === "reviews" ? ("reviews" as const) : undefined;
 
   const related = await getRelatedProducts(product.id);
   const primaryCategory = product.categories[0]?.category;
@@ -179,6 +192,20 @@ export default async function ProductPage({
         variants={product.variants}
         reviews={product.reviews}
         currency={currency}
+        isLoggedIn={Boolean(session?.user)}
+        reviewEligibility={{
+          canReview: reviewEligibility.canReview,
+          hasReviewed: reviewEligibility.hasReviewed,
+          existingReview: reviewEligibility.existingReview
+            ? {
+                id: reviewEligibility.existingReview.id,
+                author: reviewEligibility.existingReview.author,
+                content: reviewEligibility.existingReview.content,
+                rating: reviewEligibility.existingReview.rating,
+              }
+            : null,
+        }}
+        initialTab={initialTab}
       />
 
       <RelatedProducts products={related} currency={currency} />

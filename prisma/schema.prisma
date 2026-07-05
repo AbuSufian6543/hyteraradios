@@ -113,6 +113,7 @@ model User {
   refundsProcessed   Refund[]            @relation("RefundProcessedBy")
   inventoryChanges   InventoryMovement[] @relation("InventoryChangedBy")
   passwordResetTokens PasswordResetToken[]
+  reviews             Review[]
 }
 
 model Category {
@@ -445,6 +446,7 @@ model OrderItem {
 model Review {
   id        String   @id @default(cuid())
   productId String?
+  userId    String?
   author    String
   content   String   @db.Text
   rating    Int      @default(5)
@@ -452,6 +454,9 @@ model Review {
   createdAt DateTime @default(now())
 
   product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, productId])
 }
 
 model NewsletterSubscriber {

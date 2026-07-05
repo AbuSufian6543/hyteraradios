@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ProductImage } from "@/components/products/product-image";
 import {
   Star,
@@ -14,6 +15,7 @@ import { addToCartAction } from "@/app/actions/cart";
 import { QuantitySelector } from "@/components/products/quantity-selector";
 import { PreOrderModal } from "@/components/products/pre-order-modal";
 import { PurchaseRequestForm } from "@/components/products/purchase-request-form";
+import { ProductReviewForm } from "@/components/products/product-review-form";
 import Link from "next/link";
 import { Input, Label } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
@@ -51,10 +53,17 @@ type Review = {
   rating: number;
 };
 
+type ReviewEligibility = {
+  canReview: boolean;
+  hasReviewed: boolean;
+  existingReview: Review | null;
+};
+
 type ProductDetailClientProps = {
   product: {
     id: string;
     name: string;
+    slug: string;
     brand?: string | null;
     description: string;
     shortDescription?: string | null;
@@ -79,6 +88,9 @@ type ProductDetailClientProps = {
   variants: Variant[];
   reviews: Review[];
   currency: Currency;
+  isLoggedIn: boolean;
+  reviewEligibility: ReviewEligibility;
+  initialTab?: TabKey;
 };
 
 type TabKey = "details" | "specs" | "reviews";
@@ -137,13 +149,17 @@ export function ProductDetailClient({
   variants,
   reviews,
   currency,
+  isLoggedIn,
+  reviewEligibility,
+  initialTab = "details",
 }: ProductDetailClientProps) {
+  const router = useRouter();
   const [selectedValues, setSelectedValues] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
   const [added, setAdded] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
-  const [tab, setTab] = useState<TabKey>("details");
+  const [tab, setTab] = useState<TabKey>(initialTab);
   const [selectedFrequency, setSelectedFrequency] = useState("");
   const [txFrequency, setTxFrequency] = useState("");
   const [rxFrequency, setRxFrequency] = useState("");
@@ -645,6 +661,43 @@ export function ProductDetailClient({
 
           {tab === "reviews" && (
             <div className="max-w-3xl">
+              {!isLoggedIn ? (
+                <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-700">
+                  <Link
+                    href={`/account/login?callbackUrl=${encodeURIComponent(`/products/${product.slug}?tab=reviews`)}`}
+                    className="font-semibold text-blue-600 hover:underline"
+                  >
+                    Sign in
+                  </Link>{" "}
+                  to leave a review for this product.
+                </div>
+              ) : reviewEligibility.hasReviewed && reviewEligibility.existingReview ? (
+                <div className="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                  <p className="text-sm font-semibold text-emerald-800">
+                    You reviewed this product
+                  </p>
+                  <div className="mt-2 flex gap-1 text-amber-400">
+                    {Array.from({ length: reviewEligibility.existingReview.rating }).map(
+                      (_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-current" />
+                      ),
+                    )}
+                  </div>
+                  <p className="mt-2 text-sm text-slate-700">
+                    &ldquo;{reviewEligibility.existingReview.content}&rdquo;
+                  </p>
+                </div>
+              ) : reviewEligibility.canReview ? (
+                <ProductReviewForm
+                  productId={product.id}
+                  onSubmitted={() => router.refresh()}
+                />
+              ) : (
+                <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-600">
+                  Only customers who purchased this product can leave a review.
+                </div>
+              )}
+
               {reviews.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-300 py-12 text-center">
                   <Radio className="h-8 w-8 text-slate-300" />

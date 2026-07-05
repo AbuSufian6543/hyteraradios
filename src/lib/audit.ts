@@ -41,7 +41,8 @@ export type AuditEntityType =
   | "Coupon"
   | "ComparisonAttribute"
   | "PurchaseRequest"
-  | "Customer";
+  | "Customer"
+  | "Review";
 
 export type RecordAuditInput = {
   actor?: AuditActor | null;
