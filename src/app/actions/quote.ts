@@ -11,6 +11,7 @@ import {
 } from "@/lib/email-templates";
 import { sanitizeText, sanitizeEmail } from "@/lib/sanitize";
 import { EMAIL_BRAND_NAME } from "@/lib/constants";
+import { rateLimitAction } from "@/lib/action-rate-limit";
 
 async function persistQuoteSubmission(data: {
   type: QuoteSubmissionType;
@@ -25,6 +26,9 @@ async function persistQuoteSubmission(data: {
 }
 
 export async function submitQuoteRequestAction(formData: FormData) {
+  const limited = await rateLimitAction("quote-submit", 5, 60_000);
+  if (limited) return { error: limited };
+
   const name = sanitizeText(String(formData.get("name") ?? ""));
   const email = sanitizeEmail(String(formData.get("email") ?? ""));
   const phone = sanitizeText(String(formData.get("phone") ?? ""), 30);
@@ -86,6 +90,9 @@ export async function submitQuoteRequestAction(formData: FormData) {
 }
 
 export async function submitPreOrderAction(formData: FormData) {
+  const limited = await rateLimitAction("quote-submit", 5, 60_000);
+  if (limited) return { error: limited };
+
   const name = sanitizeText(String(formData.get("name") ?? ""));
   const email = sanitizeEmail(String(formData.get("email") ?? ""));
   const phone = sanitizeText(String(formData.get("phone") ?? ""), 30);

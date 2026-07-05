@@ -13,6 +13,12 @@ import { generateOrderNumber } from "@/lib/utils";
 import { createPayPalOrder, capturePayPalOrder } from "@/lib/paypal";
 import { rateLimitAction } from "@/lib/action-rate-limit";
 import { evaluateCoupon, redeemCouponForOrder } from "@/lib/coupons";
+import { validatePurchasableLine } from "@/lib/cart-validation";
+import {
+  assertCheckoutOrderAccess,
+  clearPendingCheckoutOrder,
+  stampPendingCheckoutOrder,
+} from "@/lib/checkout-access";
 import { writeSystemLog } from "@/lib/system-log";
 import { flagOrderIfSuspicious, type FraudOrder } from "@/lib/fraud";
 import { getRequestIp } from "@/lib/request-ip";
@@ -91,6 +97,18 @@ async function buildOrderDraft(
   const orderItems: OrderDraft["orderItems"] = [];
 
   for (const item of cart.items) {
+    if (item.product.status !== "ACTIVE") {
+      return { error: "A product in your cart is no longer available." };
+    }
+
+    const purchasable = await validatePurchasableLine(
+      item.productId,
+      item.variantId,
+    );
+    if ("error" in purchasable) {
+      return { error: purchasable.error };
+    }
+
     const pricing = item.variant
       ? getVariantPrice(item.variant, item.product, currency)
       : getProductPrice(item.product, currency);
@@ -262,6 +280,8 @@ export async function createCheckoutOrderAction(formData: FormData) {
       data: { paypalOrderId },
     });
 
+    await stampPendingCheckoutOrder(order.id);
+
     return { orderId: order.id, paypalOrderId };
   } catch (err) {
     await prisma.order.update({
@@ -298,6 +318,9 @@ export async function captureCheckoutOrderAction(orderId: string, paypalOrderId:
     return { error: "Invalid order." };
   }
 
+  const access = await assertCheckoutOrderAccess(order);
+  if (access) return access;
+
   if (order.status === "PAID") {
     return { success: true, orderNumber: order.orderNumber };
   }
@@ -307,6 +330,28 @@ export async function captureCheckoutOrderAction(orderId: string, paypalOrderId:
 
     if (capture.status !== "COMPLETED") {
       return { error: "Payment was not completed." };
+    }
+
+    if (
+      capture.amountCents === null ||
+      capture.currency !== order.currency ||
+      capture.amountCents !== order.totalCents
+    ) {
+      await writeSystemLog({
+        category: "SECURITY",
+        level: "error",
+        message: `PayPal capture amount mismatch for order ${order.orderNumber}`,
+        metadata: {
+          orderId: order.id,
+          expectedCents: order.totalCents,
+          expectedCurrency: order.currency,
+          capturedCents: capture.amountCents,
+          capturedCurrency: capture.currency,
+        },
+        ip: await getRequestIp(),
+        userId: order.userId,
+      });
+      return { error: "Payment amount mismatch. Please contact support." };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -356,6 +401,8 @@ export async function captureCheckoutOrderAction(orderId: string, paypalOrderId:
     });
 
     await onOrderPaid(order.id);
+
+    await clearPendingCheckoutOrder();
 
     const ip = await getRequestIp();
     await writeSystemLog({
@@ -413,11 +460,24 @@ function toFraudOrder(order: {
 }
 
 export async function cancelCheckoutOrderAction(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { id: true, userId: true, status: true },
+  });
+
+  if (!order || order.status !== "PENDING") {
+    return;
+  }
+
+  const access = await assertCheckoutOrderAccess(order);
+  if (access) return;
+
   await prisma.order.updateMany({
     where: { id: orderId, status: "PENDING" },
     data: { status: "CANCELLED" },
   });
   await markPaymentFailed(orderId);
+  await clearPendingCheckoutOrder();
 }
 
 const OFFLINE_METHODS = {
@@ -485,6 +545,8 @@ export async function createOfflineOrderAction(formData: FormData) {
 
   revalidatePath("/cart");
   revalidatePath("/", "layout");
+
+  await stampPendingCheckoutOrder(order.id);
 
   return {
     success: true,

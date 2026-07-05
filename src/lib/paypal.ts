@@ -77,8 +77,17 @@ export async function capturePayPalOrder(paypalOrderId: string) {
   const captureId =
     response.result.purchaseUnits?.[0]?.payments?.captures?.[0]?.id ?? null;
 
+  const capturedAmount =
+    response.result.purchaseUnits?.[0]?.payments?.captures?.[0]?.amount;
+  const currency = capturedAmount?.currencyCode as "CAD" | "USD" | undefined;
+  const amountCents = capturedAmount?.value
+    ? Math.round(parseFloat(capturedAmount.value) * 100)
+    : null;
+
   return {
     status: response.result.status,
     captureId,
+    amountCents,
+    currency: currency ?? null,
   };
 }

@@ -226,6 +226,9 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function newsletterAction(formData: FormData) {
+  const limited = await rateLimitAction("newsletter", 10, 60_000);
+  if (limited) return { error: limited };
+
   const email = String(formData.get("email") ?? "").toLowerCase().trim();
   if (!email) {
     return { error: "Email is required." };

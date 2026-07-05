@@ -8,6 +8,7 @@ import { getCurrency } from "@/lib/currency-server";
 import { getProductPrice, getVariantPrice } from "@/lib/currency";
 import { evaluateCoupon, normalizeCouponCode } from "@/lib/coupons";
 import type { CouponLineItem } from "@/lib/coupons";
+import { validatePurchasableLine } from "@/lib/cart-validation";
 
 const OPEN_STOCK_LIMIT = 99;
 
@@ -56,6 +57,12 @@ export async function addToCartAction(formData: FormData) {
     txFrequency = selectedFrequency;
     rxFrequency = "";
   }
+
+  const purchasable = await validatePurchasableLine(productId, variantId);
+  if ("error" in purchasable) {
+    return { error: purchasable.error };
+  }
+
   const stockLimit = await getStockLimit(productId, variantId);
   if (stockLimit <= 0) return;
 
@@ -101,12 +108,15 @@ export async function addToCartAction(formData: FormData) {
 export async function updateCartItemAction(formData: FormData) {
   const itemId = String(formData.get("itemId"));
   const quantity = Math.max(0, Number(formData.get("quantity")));
+  const cart = await getOrCreateCart();
 
   if (quantity === 0) {
-    await prisma.cartItem.delete({ where: { id: itemId } });
+    await prisma.cartItem.deleteMany({
+      where: { id: itemId, cartId: cart.id },
+    });
   } else {
-    const item = await prisma.cartItem.findUnique({
-      where: { id: itemId },
+    const item = await prisma.cartItem.findFirst({
+      where: { id: itemId, cartId: cart.id },
       select: { variantId: true, productId: true },
     });
     if (!item) return;
@@ -124,7 +134,10 @@ export async function updateCartItemAction(formData: FormData) {
 
 export async function removeCartItemAction(formData: FormData) {
   const itemId = String(formData.get("itemId"));
-  await prisma.cartItem.delete({ where: { id: itemId } });
+  const cart = await getOrCreateCart();
+  await prisma.cartItem.deleteMany({
+    where: { id: itemId, cartId: cart.id },
+  });
   revalidatePath("/cart");
   revalidatePath("/", "layout");
 }

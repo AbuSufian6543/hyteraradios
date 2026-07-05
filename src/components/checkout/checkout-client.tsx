@@ -158,7 +158,7 @@ export function CheckoutClient({
           const currentOrderId = orderIdRef.current;
           if (!currentOrderId) return;
           const result = await captureCheckoutOrderAction(currentOrderId, data.orderID);
-          if (result.error) {
+          if ("error" in result) {
             setError(result.error);
             return;
           }
