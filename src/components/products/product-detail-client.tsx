@@ -16,6 +16,7 @@ import { QuantitySelector } from "@/components/products/quantity-selector";
 import { PreOrderModal } from "@/components/products/pre-order-modal";
 import { PurchaseRequestForm } from "@/components/products/purchase-request-form";
 import { ProductReviewForm } from "@/components/products/product-review-form";
+import { StarRatingDisplay } from "@/components/products/star-rating-display";
 import Link from "next/link";
 import { Input, Label } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
@@ -260,7 +261,7 @@ export function ProductDetailClient({
 
   const avgRating = reviews.length
     ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
-    : 5;
+    : 0;
 
   async function handleAddToCart() {
     setPending(true);
@@ -336,20 +337,20 @@ export function ProductDetailClient({
             {product.name}
           </h1>
 
-          <div className="mt-3 flex items-center gap-2">
-            <div className="flex text-amber-400">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < Math.round(avgRating) ? "fill-current" : "fill-slate-200 text-slate-200"}`}
-                />
-              ))}
+          {reviews.length > 0 && (
+            <div className="mt-3 flex items-center gap-2">
+              <StarRatingDisplay
+                avgRating={avgRating}
+                reviewCount={reviews.length}
+                size="md"
+                showCount={false}
+              />
+              <span className="text-sm text-slate-500">
+                {avgRating.toFixed(1)} ({reviews.length} review
+                {reviews.length === 1 ? "" : "s"})
+              </span>
             </div>
-            <span className="text-sm text-slate-500">
-              {avgRating.toFixed(1)} ({reviews.length} review
-              {reviews.length === 1 ? "" : "s"})
-            </span>
-          </div>
+          )}
 
           {product.shortDescription && (
             <p className="mt-4 leading-relaxed text-slate-600">

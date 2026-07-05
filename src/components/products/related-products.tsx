@@ -1,5 +1,6 @@
 import { ProductCard } from "@/components/products/product-card";
 import type { Currency } from "@/lib/currency";
+import type { ProductReviewStats } from "@/lib/product-reviews";
 
 type RelatedProductsProps = {
   products: Array<{
@@ -18,9 +19,14 @@ type RelatedProductsProps = {
     stock: number;
   }>;
   currency: Currency;
+  reviewStats?: Map<string, ProductReviewStats>;
 };
 
-export function RelatedProducts({ products, currency }: RelatedProductsProps) {
+export function RelatedProducts({
+  products,
+  currency,
+  reviewStats,
+}: RelatedProductsProps) {
   if (products.length < 2) return null;
 
   return (
@@ -29,7 +35,11 @@ export function RelatedProducts({ products, currency }: RelatedProductsProps) {
       <div className="mt-6 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory lg:grid lg:grid-cols-4 lg:overflow-visible">
         {products.map((product) => (
           <div key={product.id} className="min-w-[240px] shrink-0 snap-start lg:min-w-0">
-            <ProductCard product={product} currency={currency} />
+            <ProductCard
+              product={product}
+              currency={currency}
+              reviewStats={reviewStats?.get(product.id) ?? null}
+            />
           </div>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/products/product-card";
 import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
+import { getReviewStatsByProductIds } from "@/lib/product-reviews";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -52,6 +53,7 @@ export default async function CategoryPage({
   if (!category) notFound();
 
   const products = category.products.map((p) => p.product);
+  const reviewStats = await getReviewStatsByProductIds(products.map((p) => p.id));
 
   return (
     <div className="container-page py-10">
@@ -66,7 +68,12 @@ export default async function CategoryPage({
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} currency={currency} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              currency={currency}
+              reviewStats={reviewStats.get(product.id) ?? null}
+            />
           ))}
         </div>
       )}

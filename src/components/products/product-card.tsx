@@ -1,8 +1,9 @@
 import { ProductImage } from "@/components/products/product-image";
+import { StarRatingDisplay } from "@/components/products/star-rating-display";
 import Link from "next/link";
-import { Star } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { getProductPrice, type Currency } from "@/lib/currency";
+import type { ProductReviewStats } from "@/lib/product-reviews";
 import { QuickAddButton } from "./quick-add-button";
 import { CompareButton } from "@/components/compare/compare-button";
 
@@ -23,9 +24,10 @@ type ProductCardProps = {
     stock: number;
   };
   currency: Currency;
+  reviewStats?: ProductReviewStats | null;
 };
 
-export function ProductCard({ product, currency }: ProductCardProps) {
+export function ProductCard({ product, currency, reviewStats }: ProductCardProps) {
   const pricing = getProductPrice(product, currency);
   const image = product.images[0] ?? "/placeholder-product.svg";
   const savings = pricing.onSale
@@ -77,14 +79,16 @@ export function ProductCard({ product, currency }: ProductCardProps) {
           </Link>
         </h3>
 
-        <div className="mt-2 flex items-center gap-1 text-amber-400">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className="h-3.5 w-3.5 fill-current" />
-          ))}
-          <span className="ml-1 text-xs font-medium text-slate-400">(5.0)</span>
-        </div>
+        {reviewStats && reviewStats.reviewCount > 0 && (
+          <div className="mt-2">
+            <StarRatingDisplay
+              avgRating={reviewStats.avgRating}
+              reviewCount={reviewStats.reviewCount}
+            />
+          </div>
+        )}
 
-        <div className="mt-3 flex items-end gap-2">
+        <div className={`flex items-end gap-2 ${reviewStats?.reviewCount ? "mt-3" : "mt-2"}`}>
           {pricing.onSale ? (
             <>
               <span className="text-xl font-extrabold text-blue-600">

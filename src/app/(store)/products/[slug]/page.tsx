@@ -4,7 +4,7 @@ import { ProductDetailClient } from "@/components/products/product-detail-client
 import { RelatedProducts } from "@/components/products/related-products";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { getProductReviewEligibility } from "@/lib/product-reviews";
+import { getProductReviewEligibility, getReviewStatsByProductIds } from "@/lib/product-reviews";
 import { getCurrency } from "@/lib/currency-server";
 import { getProductPrice } from "@/lib/currency";
 import { getRelatedProducts } from "@/lib/related-products";
@@ -108,6 +108,7 @@ export default async function ProductPage({
   const initialTab = sp.tab === "reviews" ? ("reviews" as const) : undefined;
 
   const related = await getRelatedProducts(product.id);
+  const relatedReviewStats = await getReviewStatsByProductIds(related.map((p) => p.id));
   const primaryCategory = product.categories[0]?.category;
 
   const pricing = getProductPrice(product, currency);
@@ -208,7 +209,11 @@ export default async function ProductPage({
         initialTab={initialTab}
       />
 
-      <RelatedProducts products={related} currency={currency} />
+      <RelatedProducts
+        products={related}
+        currency={currency}
+        reviewStats={relatedReviewStats}
+      />
     </div>
   );
 }

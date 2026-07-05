@@ -4,7 +4,28 @@ import {
   NON_REVIEWABLE_ORDER_STATUSES,
   REVIEWABLE_ORDER_STATUSES,
   reviewAuthorFromUser,
+  summarizeReviewRatings,
 } from "./product-reviews";
+
+describe("summarizeReviewRatings", () => {
+  it("returns null for no ratings", () => {
+    expect(summarizeReviewRatings([])).toBeNull();
+  });
+
+  it("summarizes a single rating", () => {
+    expect(summarizeReviewRatings([3])).toEqual({
+      avgRating: 3,
+      reviewCount: 1,
+    });
+  });
+
+  it("averages multiple ratings", () => {
+    expect(summarizeReviewRatings([5, 3, 4])).toEqual({
+      avgRating: 4,
+      reviewCount: 3,
+    });
+  });
+});
 
 describe("isReviewableOrderStatus", () => {
   it("allows paid-through-delivered statuses", () => {

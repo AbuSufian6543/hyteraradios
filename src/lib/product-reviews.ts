@@ -90,3 +90,46 @@ export function reviewAuthorFromUser(user: {
   const local = user.email.split("@")[0]?.trim();
   return local || user.email;
 }
+
+export type ProductReviewStats = {
+  avgRating: number;
+  reviewCount: number;
+};
+
+export function summarizeReviewRatings(
+  ratings: number[],
+): ProductReviewStats | null {
+  if (ratings.length === 0) return null;
+  const total = ratings.reduce((sum, rating) => sum + rating, 0);
+  return {
+    avgRating: total / ratings.length,
+    reviewCount: ratings.length,
+  };
+}
+
+export async function getReviewStatsByProductIds(
+  productIds: string[],
+): Promise<Map<string, ProductReviewStats>> {
+  const uniqueIds = [...new Set(productIds.filter(Boolean))];
+  if (uniqueIds.length === 0) return new Map();
+
+  const reviews = await prisma.review.findMany({
+    where: { productId: { in: uniqueIds } },
+    select: { productId: true, rating: true },
+  });
+
+  const ratingsByProduct = new Map<string, number[]>();
+  for (const review of reviews) {
+    if (!review.productId) continue;
+    const ratings = ratingsByProduct.get(review.productId) ?? [];
+    ratings.push(review.rating);
+    ratingsByProduct.set(review.productId, ratings);
+  }
+
+  const stats = new Map<string, ProductReviewStats>();
+  for (const [productId, ratings] of ratingsByProduct) {
+    const summary = summarizeReviewRatings(ratings);
+    if (summary) stats.set(productId, summary);
+  }
+  return stats;
+}

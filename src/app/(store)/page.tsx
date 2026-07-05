@@ -20,6 +20,7 @@ import { FeaturedItemsSection } from "@/components/home/featured-items-section";
 import { Reveal } from "@/components/ui/reveal";
 import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
+import { getReviewStatsByProductIds } from "@/lib/product-reviews";
 import { cacheGet, cacheSet } from "@/lib/cache";
 
 async function getHeroSlides() {
@@ -109,6 +110,12 @@ export default async function HomePage() {
       getFeaturedItems(),
       getHeroFeaturedProducts(),
     ]);
+
+  const featuredProductIds = [
+    ...newArrivals.map((p) => p.id),
+    ...bestSellers.map((p) => p.id),
+  ];
+  const reviewStats = await getReviewStatsByProductIds(featuredProductIds);
 
   const valueProps = [
     { icon: Truck, title: "Fast Free Shipping", desc: "On all qualifying orders across the US & Canada." },
@@ -217,14 +224,24 @@ export default async function HomePage() {
             bestSellers={
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {bestSellers.map((product) => (
-                  <ProductCard key={product.id} product={product} currency={currency} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    currency={currency}
+                    reviewStats={reviewStats.get(product.id) ?? null}
+                  />
                 ))}
               </div>
             }
             newArrivals={
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {newArrivals.map((product) => (
-                  <ProductCard key={product.id} product={product} currency={currency} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    currency={currency}
+                    reviewStats={reviewStats.get(product.id) ?? null}
+                  />
                 ))}
               </div>
             }
