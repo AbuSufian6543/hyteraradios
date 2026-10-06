@@ -10,6 +10,10 @@ export const PARENT_COMPANY = "WirelessCom.ca Inc.";
 export const PARENT_COMPANY_URL = "https://www.wirelesscom.org/";
 export const SITE_DOMAIN = "Hyteraradios.ca";
 
+/** Exact Hytera authorized-dealer disclosure shown in the header and footer. */
+export const HYTERA_DEALER_DISCLAIMER =
+  "HyteraRadios.ca is independently owned and operated by WirelessCom.ca Inc. and is not the official Hytera website.";
+
 export const SITE_ADDRESS_LINES = [
   "WirelessCom.ca Inc.",
   "97 White Oak Drive East",

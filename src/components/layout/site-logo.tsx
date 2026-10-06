@@ -47,7 +47,7 @@ export function SiteLogo({
         />
       </span>
       {showName && (
-        <span className={`leading-tight tracking-tight ${dims.text}`}>
+        <span className={`whitespace-nowrap leading-tight tracking-tight max-[380px]:whitespace-normal ${dims.text}`}>
           {SITE_NAME}
         </span>
       )}

@@ -15,6 +15,7 @@ import {
 import { SITE_PHONE } from "@/lib/constants";
 import { setCurrencyAction } from "@/app/actions/currency";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthorizedDealerNotice } from "@/components/layout/authorized-dealer-notice";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -107,11 +108,12 @@ export function Header({
     announcementEnabled && Boolean(announcementText?.trim());
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm dark:bg-slate-900 dark:shadow-slate-950/50">
+    <header className="sticky top-0 z-50 w-full min-w-0 bg-white shadow-sm dark:bg-slate-900 dark:shadow-slate-950/50">
+      <AuthorizedDealerNotice />
       {showAnnouncement && (
         <div className="bg-slate-900 text-white">
-          <div className="container-page flex h-9 items-center justify-between text-xs font-medium sm:text-[13px]">
-            <p className="tracking-wide">{announcementText}</p>
+          <div className="container-page flex min-h-9 items-center justify-between gap-3 py-1.5 text-xs font-medium sm:text-[13px]">
+            <p className="min-w-0 tracking-wide">{announcementText}</p>
             <a
               href={`tel:${SITE_PHONE.replace(/[^\d+]/g, "")}`}
               className="hidden items-center gap-1.5 text-slate-200 transition hover:text-white sm:flex"
@@ -125,7 +127,7 @@ export function Header({
 
       {/* Main bar */}
       <div className="border-b border-slate-200">
-        <div className="container-page flex h-20 items-center gap-4 py-3">
+        <div className="container-page flex h-20 items-center gap-2 py-3 sm:gap-4">
           <button
             className="rounded-md p-2 text-slate-700 hover:bg-slate-100 lg:hidden"
             onClick={() => setMobileOpen((v) => !v)}
@@ -134,7 +136,7 @@ export function Header({
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          <SiteLogo logoUrl={logoUrl} className="shadow-none" />
+          <SiteLogo logoUrl={logoUrl} className="shrink-0 shadow-none" />
 
           {/* Desktop search */}
           <form
