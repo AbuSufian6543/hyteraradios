@@ -19,7 +19,7 @@ import {
   SITE_MAP_EMBED_URL,
   SITE_MAP_LINK_URL,
 } from "@/lib/constants";
-import { AuthorizedDealerNotice } from "@/components/layout/authorized-dealer-notice";
+import { DealerFooterLine } from "@/components/layout/authorized-dealer-notice";
 import { PaymentLogos } from "@/components/layout/payment-logos";
 import { SiteLogo } from "@/components/layout/site-logo";
 
@@ -94,7 +94,6 @@ export function Footer({
             </a>
             .
           </p>
-          <AuthorizedDealerNotice variant="compact" className="mt-4 max-w-sm" />
           <div className="mt-6 flex gap-3">
             {socials.map((s) => (
               <a
@@ -193,7 +192,8 @@ export function Footer({
       </div>
 
       <div className="border-t border-slate-200">
-        <div className="container-page flex flex-col items-center justify-between gap-3 py-5 text-xs text-slate-500 sm:flex-row">
+        <DealerFooterLine />
+        <div className="container-page flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-5 text-xs text-slate-500 sm:flex-row">
           <div className="flex flex-wrap items-center gap-3">
             <p>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
             {proudlyCanadianEnabled && (

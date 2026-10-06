@@ -15,6 +15,8 @@ import { ProductCard } from "@/components/products/product-card";
 import { CategoryCard, IndustryCard } from "@/components/products/category-card";
 import { FeaturedTabs } from "@/components/products/featured-tabs";
 import { HeroCarousel } from "@/components/home/hero-carousel";
+import { SignalField } from "@/components/home/signal-field";
+import { DealerHeroNote } from "@/components/layout/authorized-dealer-notice";
 import { HeroFeaturedProductPanel } from "@/components/home/hero-featured-product-panel";
 import { FeaturedItemsSection } from "@/components/home/featured-items-section";
 import { Reveal } from "@/components/ui/reveal";
@@ -138,7 +140,8 @@ export default async function HomePage() {
 
       {/* HERO — always show copy + featured product panel */}
       <section className="hero-light relative overflow-hidden border-b border-slate-200 dark:border-slate-800">
-        <div className="container-page relative grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+        <SignalField />
+        <div className="container-page relative z-10 grid items-center gap-12 py-14 lg:grid-cols-2 lg:py-20">
           <div className="animate-fade-up">
             <span className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-blue-600 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400">
               <Zap className="h-3.5 w-3.5" /> Over 25 Years in Two-Way Radio
@@ -150,6 +153,7 @@ export default async function HomePage() {
               Business, commercial, and nationwide PoC radios — with expert
               programming, fast shipping, and industry-ready kits for every team.
             </p>
+            <DealerHeroNote className="mt-6" />
             <div className="mt-8 flex flex-wrap gap-3">
               <Button size="lg" asChild>
                 <Link href="/search">
@@ -357,6 +361,8 @@ export default async function HomePage() {
       {/* QUOTE CTA */}
       <section className="container-page py-16 lg:py-20">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-14 text-center text-white shadow-xl lg:px-16">
+          <SignalField tone="light" className="opacity-70" />
+          <div className="relative z-10">
           <h2 className="text-3xl font-extrabold sm:text-4xl">Stay Connected</h2>
           <p className="mx-auto mt-3 max-w-xl text-blue-100">
             Need a quote for radios, accessories, or a custom deployment? Our team
@@ -369,6 +375,7 @@ export default async function HomePage() {
             >
               Request a Quote
             </a>
+          </div>
           </div>
         </div>
       </section>

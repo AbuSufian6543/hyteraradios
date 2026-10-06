@@ -15,7 +15,7 @@ import {
 import { SITE_PHONE } from "@/lib/constants";
 import { setCurrencyAction } from "@/app/actions/currency";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { AuthorizedDealerNotice } from "@/components/layout/authorized-dealer-notice";
+import { DealerMark } from "@/components/layout/authorized-dealer-notice";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -109,7 +109,6 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-50 w-full min-w-0 bg-white shadow-sm dark:bg-slate-900 dark:shadow-slate-950/50">
-      <AuthorizedDealerNotice />
       {showAnnouncement && (
         <div className="bg-slate-900 text-white">
           <div className="container-page flex min-h-9 items-center justify-between gap-3 py-1.5 text-xs font-medium sm:text-[13px]">
@@ -137,6 +136,7 @@ export function Header({
           </button>
 
           <SiteLogo logoUrl={logoUrl} className="shrink-0 shadow-none" />
+          <DealerMark />
 
           {/* Desktop search */}
           <form

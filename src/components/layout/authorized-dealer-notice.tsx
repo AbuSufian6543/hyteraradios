@@ -16,8 +16,6 @@ function DisclaimerText({ className }: { className: string }) {
 
   const before = HYTERA_DEALER_DISCLAIMER.slice(0, splitAt);
   const after = HYTERA_DEALER_DISCLAIMER.slice(splitAt + PARENT_COMPANY.length);
-  const emphasis = "not the official Hytera website";
-  const emphasisAt = after.indexOf(emphasis);
 
   return (
     <p className={className}>
@@ -26,84 +24,67 @@ function DisclaimerText({ className }: { className: string }) {
         href={PARENT_COMPANY_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-semibold text-[#1d4ed8] underline decoration-[#1d4ed8]/30 underline-offset-2 transition hover:decoration-[#1d4ed8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1d4ed8]"
+        className="font-semibold text-blue-700 underline decoration-blue-700/30 underline-offset-2 hover:decoration-blue-700 dark:text-blue-400 dark:decoration-blue-400/30"
       >
         {PARENT_COMPANY}
       </a>
-      {emphasisAt === -1 ? (
-        after
-      ) : (
-        <>
-          {after.slice(0, emphasisAt)}
-          <span className="font-semibold text-[#1e293b]">{emphasis}</span>
-          {after.slice(emphasisAt + emphasis.length)}
-        </>
-      )}
+      {after}
     </p>
   );
 }
 
-function DealerBadge({
-  className,
-  priority = false,
-}: {
-  className: string;
-  priority?: boolean;
-}) {
+function DealerBadge({ className }: { className: string }) {
   return (
     <Image
       src={BADGE_SRC}
       alt="Authorized Dealer of Hytera"
       width={283}
       height={284}
-      priority={priority}
-      className={`keep-light shrink-0 rounded-[3px] bg-white object-contain shadow-[0_1px_2px_rgba(15,23,42,0.12)] ring-1 ring-[#c5d99a] ${className}`}
+      className={`keep-light shrink-0 bg-white object-contain ${className}`}
     />
   );
 }
 
-export function AuthorizedDealerNotice({
-  variant = "header",
-  className = "",
-}: {
-  variant?: "header" | "compact";
-  className?: string;
-}) {
-  if (variant === "compact") {
-    return (
-      <div
-        role="note"
-        className={`grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 rounded-xl border border-[#d5e7ad] bg-[linear-gradient(145deg,#ffffff_0%,#f4f9e8_72%)] p-3 ${className}`}
-      >
-        <DealerBadge className="h-16 w-16" />
-        <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#2f5d14]">
-            Authorized Dealer of Hytera
-          </p>
-          <DisclaimerText className="mt-1 text-xs leading-relaxed text-[#1e293b]" />
-        </div>
-      </div>
-    );
-  }
-
+/** Small lockup for the existing header row. It does not add a banner. */
+export function DealerMark({ className = "" }: { className?: string }) {
   return (
     <div
-      role="region"
-      aria-label="Authorized dealer notice"
-      className={`w-full max-w-full border-b-2 border-[#7db52a] bg-[linear-gradient(100deg,#ffffff_0%,#ffffff_18%,#f4f9e8_55%,#e7f3c8_100%)] ${className}`}
+      className={`hidden items-center gap-2 rounded-full border border-[#d7e8b0] bg-[#f7fbea] py-1 pl-1 pr-3 lg:flex ${className}`}
+      title={HYTERA_DEALER_DISCLAIMER}
     >
-      <div className="container-page grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-3 py-2.5 sm:gap-4 sm:py-3">
-        <DealerBadge
-          priority
-          className="h-16 w-16 sm:h-20 sm:w-20"
-        />
-        <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#2f5d14] sm:text-xs">
-            Authorized Dealer of Hytera
-          </p>
-          <DisclaimerText className="mt-1 text-[13px] font-medium leading-snug text-[#1e293b] [overflow-wrap:anywhere] sm:text-sm sm:[overflow-wrap:normal]" />
-        </div>
+      <DealerBadge className="h-9 w-9 rounded-full" />
+      <span className="text-[10px] font-bold uppercase leading-tight tracking-[0.12em] text-[#2f5d14]">
+        Authorized
+        <br />
+        Dealer
+      </span>
+    </div>
+  );
+}
+
+/** Homepage treatment: sits in the hero content, not in the sticky header. */
+export function DealerHeroNote({ className = "" }: { className?: string }) {
+  return (
+    <div
+      className={`flex max-w-xl items-center gap-3 rounded-2xl border border-white/80 bg-white/80 p-2 pr-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80 ${className}`}
+    >
+      <DealerBadge className="h-12 w-12 rounded-xl" />
+      <div className="min-w-0">
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#3a6b12]">
+          Authorized Dealer of Hytera
+        </p>
+        <DisclaimerText className="mt-0.5 text-[12px] leading-snug text-slate-600 sm:text-[13px]" />
       </div>
+    </div>
+  );
+}
+
+/** One quiet line in the footer, on every page. */
+export function DealerFooterLine() {
+  return (
+    <div className="container-page flex items-center justify-center gap-2.5 py-3.5">
+      <DealerBadge className="h-8 w-8 rounded-md" />
+      <DisclaimerText className="max-w-3xl text-left text-[11px] leading-snug text-slate-500 sm:text-xs" />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { AuthorizedDealerNotice } from "@/components/layout/authorized-dealer-notice";
+import { DealerHeroNote } from "@/components/layout/authorized-dealer-notice";
 import { PARENT_COMPANY, PARENT_COMPANY_URL, SITE_DOMAIN, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -34,7 +34,7 @@ export default function AboutPage() {
           , a trusted communications provider based in Sault Ste. Marie, Ontario,
           with decades of experience serving teams across Canada and the US.
         </p>
-        <AuthorizedDealerNotice variant="compact" />
+        <DealerHeroNote />
         <p>
           Whether you need compact business radios, rugged commercial units, or
           nationwide push-to-talk over LTE, our team will match the right gear and
