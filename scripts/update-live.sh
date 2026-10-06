@@ -18,19 +18,5 @@ fi
 echo "[update-live] Pulling latest code..."
 git pull
 
-echo "[update-live] Rebuilding and starting (database volume is preserved)..."
-$COMPOSE up -d --build
-
-echo "[update-live] Verifying app startup (no auto-seed)..."
-sleep 3
-if $COMPOSE logs app --tail 40 2>&1 | grep -qi 'seeding database'; then
-  echo "ERROR: App logs show database seeding on startup. Check scripts/docker-entrypoint.sh"
-  exit 1
-fi
-
-if ! docker volume ls --format '{{.Name}}' | grep -qx 'sufi_postgres_data'; then
-  echo "WARNING: sufi_postgres_data volume not found. Is this a fresh server?"
-fi
-
-echo "[update-live] Done. Safe restart anytime with:"
-echo "  $COMPOSE restart"
+echo "[update-live] Deploying without seeding or removing the database..."
+exec ./deploy.sh --update

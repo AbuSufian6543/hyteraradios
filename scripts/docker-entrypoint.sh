@@ -40,6 +40,7 @@ if ! su-exec nextjs npx prisma migrate deploy; then
   echo "[entrypoint] ERROR: prisma migrate deploy failed."
   exit 1
 fi
+echo "[entrypoint] Migrations finished. Existing rows were not seeded or deleted."
 
 echo "[entrypoint] Starting Next.js on port ${PORT:-3000}..."
 exec su-exec nextjs node server.js
