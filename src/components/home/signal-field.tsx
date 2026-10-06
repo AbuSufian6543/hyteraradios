@@ -31,7 +31,10 @@ export function SignalField({
     const canvas = canvasRef.current;
     const parent = canvas?.parentElement;
     if (!canvas || !parent) return;
-    const context = canvas.getContext("2d");
+    // Nested functions do not keep the null check, so capture the narrowed values.
+    const surface = canvas;
+    const host = parent;
+    const context = surface.getContext("2d");
     if (!context) return;
     const ctx = context;
 
@@ -42,13 +45,13 @@ export function SignalField({
     let raf = 0;
 
     function resize() {
-      const width = parent.clientWidth;
-      const height = parent.clientHeight;
+      const width = host.clientWidth;
+      const height = host.clientHeight;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.floor(width * dpr));
-      canvas.height = Math.max(1, Math.floor(height * dpr));
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      surface.width = Math.max(1, Math.floor(width * dpr));
+      surface.height = Math.max(1, Math.floor(height * dpr));
+      surface.style.width = `${width}px`;
+      surface.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const count = Math.round(Math.min(48, Math.max(16, (width * height) / 22000)));
@@ -88,8 +91,8 @@ export function SignalField({
     }
 
     function draw() {
-      const width = parent.clientWidth;
-      const height = parent.clientHeight;
+      const width = host.clientWidth;
+      const height = host.clientHeight;
       ctx.clearRect(0, 0, width, height);
       const { dot, line, ring } = palette();
       const linkDistance = Math.min(130, Math.max(80, width * 0.16));
@@ -154,7 +157,7 @@ export function SignalField({
       resize();
       if (reduce) draw();
     });
-    observer.observe(parent);
+    observer.observe(host);
     resize();
     draw();
 
