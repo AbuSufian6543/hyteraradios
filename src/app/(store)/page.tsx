@@ -15,7 +15,7 @@ import { ProductCard } from "@/components/products/product-card";
 import { CategoryCard, IndustryCard } from "@/components/products/category-card";
 import { FeaturedTabs } from "@/components/products/featured-tabs";
 import { HeroCarousel } from "@/components/home/hero-carousel";
-import { SignalField } from "@/components/home/signal-field";
+import { SignalField, SignalHalo } from "@/components/home/signal-field";
 import { DealerHeroNote } from "@/components/layout/authorized-dealer-notice";
 import { HeroFeaturedProductPanel } from "@/components/home/hero-featured-product-panel";
 import { FeaturedItemsSection } from "@/components/home/featured-items-section";
@@ -178,7 +178,10 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <HeroFeaturedProductPanel products={heroFeaturedProducts} />
+          <div className="relative">
+            <SignalHalo />
+            <HeroFeaturedProductPanel products={heroFeaturedProducts} />
+          </div>
         </div>
       </section>
 
@@ -361,7 +364,7 @@ export default async function HomePage() {
       {/* QUOTE CTA */}
       <section className="container-page py-16 lg:py-20">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-14 text-center text-white shadow-xl lg:px-16">
-          <SignalField tone="light" className="opacity-70" />
+          <SignalField tone="light" />
           <div className="relative z-10">
           <h2 className="text-3xl font-extrabold sm:text-4xl">Stay Connected</h2>
           <p className="mx-auto mt-3 max-w-xl text-blue-100">
