@@ -10,6 +10,7 @@ import { getProductPrice } from "@/lib/currency";
 import { getRelatedProducts } from "@/lib/related-products";
 import { absoluteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 import type { Metadata } from "next";
 
 function productDescription(product: {
@@ -159,9 +160,10 @@ export default async function ProductPage({
   };
 
   return (
-    <div className="container-page py-10">
+    <>
       <JsonLd data={[productLd, breadcrumbLd]} />
-      <nav className="mb-6 text-sm text-slate-500">
+      <StorePageHeader compact>
+      <nav className="text-sm text-slate-500">
         <Link href="/" className="hover:text-blue-600">
           Home
         </Link>
@@ -186,7 +188,8 @@ export default async function ProductPage({
         )}
         <span className="text-slate-900">{product.name}</span>
       </nav>
-
+      </StorePageHeader>
+    <div className="container-page py-10">
       <ProductDetailClient
         product={product}
         options={product.options}
@@ -215,5 +218,6 @@ export default async function ProductPage({
         reviewStats={relatedReviewStats}
       />
     </div>
+    </>
   );
 }

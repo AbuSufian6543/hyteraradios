@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ProfileForm } from "@/components/account/profile-form";
 import { AvatarUploader } from "@/components/account/avatar-uploader";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -34,20 +35,20 @@ export default async function AccountProfilePage() {
   }
 
   return (
-    <div className="container-page py-10">
-      <div className="mb-6">
+    <>
+      <StorePageHeader
+        eyebrow="Your account"
+        title="My Profile"
+        description="Keep your contact details and default shipping address up to date."
+      >
         <Link
           href="/account"
-          className="text-sm font-medium text-blue-600 hover:underline"
+          className="mt-4 inline-flex text-sm font-medium text-blue-600 hover:underline"
         >
           &larr; Back to account
         </Link>
-        <h1 className="mt-1 text-3xl font-bold text-slate-900">My Profile</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Keep your contact details and default shipping address up to date.
-        </p>
-      </div>
-
+      </StorePageHeader>
+    <div className="container-page py-10">
       <div className="space-y-6">
         <AvatarUploader
           avatarUrl={profile.avatarUrl}
@@ -57,5 +58,6 @@ export default async function AccountProfilePage() {
         <ProfileForm defaults={profile} />
       </div>
     </div>
+    </>
   );
 }

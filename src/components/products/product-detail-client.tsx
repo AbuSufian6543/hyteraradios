@@ -293,7 +293,7 @@ export function ProductDetailClient({
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Gallery */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <div className="relative aspect-square overflow-hidden rounded-2xl border border-slate-200 bg-[#f8fafc]">
+          <div className="relative aspect-square overflow-hidden rounded-3xl border border-slate-200 bg-[#f8fafc] shadow-sm">
             <ProductImage
               src={image}
               alt={product.name}

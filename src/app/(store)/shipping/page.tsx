@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getFreeShippingMessage } from "@/lib/shipping";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export const metadata: Metadata = {
   title: "Shipping Policy",
@@ -13,9 +14,14 @@ export default async function ShippingPage() {
   const freeShippingMessage = await getFreeShippingMessage();
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Delivery"
+        title="Shipping Policy"
+        description="Processing times and delivery across Canada and the United States."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Shipping Policy</h1>
-      <div className="mt-8 max-w-2xl prose-store space-y-4">
+      <div className="max-w-2xl prose-store space-y-4">
         <p>
           We ship to the United States and Canada. Orders are processed within 1-2
           business days from our fulfillment center.
@@ -27,5 +33,6 @@ export default async function ShippingPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

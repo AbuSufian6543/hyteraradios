@@ -4,6 +4,7 @@ import { auth, signOut } from "@/lib/auth";
 import { isAdminRole } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export default async function AccountPage() {
   const session = await auth();
@@ -29,12 +30,17 @@ export default async function AccountPage() {
   const hasAddress = !!profile?.addressLine1;
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Your account"
+        title="My Account"
+        description="Profile, saved address, and order history."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">My Account</h1>
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3">
         <Link
           href="/account/profile"
-          className="rounded-xl border border-slate-200 p-6 transition hover:border-blue-200 hover:shadow-sm"
+          className="card-surface p-6 transition hover:border-blue-200 hover:shadow-md"
         >
           <h2 className="font-bold text-slate-900">Profile</h2>
           <p className="mt-2 text-sm text-slate-600">{profile?.name ?? "Customer"}</p>
@@ -55,7 +61,7 @@ export default async function AccountPage() {
         </Link>
         <Link
           href="/account/orders"
-          className="rounded-xl border border-slate-200 p-6 transition hover:border-blue-200 hover:shadow-sm"
+          className="card-surface p-6 transition hover:border-blue-200 hover:shadow-md"
         >
           <h2 className="font-bold text-slate-900">Order History</h2>
           <p className="mt-2 text-sm text-slate-600">View your past orders and statuses.</p>
@@ -82,5 +88,6 @@ export default async function AccountPage() {
         </Button>
       </form>
     </div>
+    </>
   );
 }

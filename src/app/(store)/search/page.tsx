@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
 import { getReviewStatsByProductIds } from "@/lib/product-reviews";
 import { SearchForm } from "@/components/forms/search-form";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -59,12 +60,18 @@ export default async function SearchPage({
   const reviewStats = await getReviewStatsByProductIds(products.map((p) => p.id));
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Catalog"
+        title="Search Products"
+        description="Business, commercial, and nationwide radios, plus the accessories that go with them."
+      >
+        <div className="mt-6 max-w-xl">
+          <SearchForm initialQuery={query} />
+        </div>
+      </StorePageHeader>
     <div className="container-page py-10">
-      <h1 className="section-title">Search Products</h1>
-      <div className="mt-6 max-w-xl">
-        <SearchForm initialQuery={query} />
-      </div>
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="text-sm text-slate-600">
         {total} product{total === 1 ? "" : "s"} found
         {query ? ` for "${query}"` : ""}
         {totalPages > 1 && ` · Page ${pageNum} of ${totalPages}`}
@@ -100,5 +107,6 @@ export default async function SearchPage({
         </div>
       )}
     </div>
+    </>
   );
 }

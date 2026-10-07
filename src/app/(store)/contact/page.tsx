@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 import {
   SITE_EMAIL,
   SITE_PHONE,
@@ -18,9 +19,14 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Talk to an expert"
+        title="Contact Us"
+        description="Product selection, programming, and deployment help from our Canada and US team."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Contact Us</h1>
-      <div className="mt-8 grid gap-10 lg:grid-cols-2">
+      <div className="grid gap-10 lg:grid-cols-2">
         <div className="prose-store max-w-2xl">
           <p>
             Need help choosing the right two-way radio for your team? Our experts are
@@ -65,5 +71,6 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

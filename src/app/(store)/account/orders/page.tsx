@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CustomerOrdersList } from "@/components/account/customer-orders-list";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export default async function OrdersPage() {
   const session = await auth();
@@ -32,13 +33,17 @@ export default async function OrdersPage() {
   }));
 
   return (
-    <div className="container-page py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="section-title">Order History</h1>
-        <Link href="/account" className="text-sm font-semibold text-blue-600">
+    <>
+      <StorePageHeader
+        eyebrow="Your account"
+        title="Order History"
+        description="Past orders, status, and invoices."
+      >
+        <Link href="/account" className="mt-4 inline-flex text-sm font-semibold text-blue-600">
           Back to Account
         </Link>
-      </div>
+      </StorePageHeader>
+    <div className="container-page py-10">
 
       {rows.length === 0 ? (
         <p className="text-slate-600">You have no orders yet.</p>
@@ -46,5 +51,6 @@ export default async function OrdersPage() {
         <CustomerOrdersList orders={rows} />
       )}
     </div>
+    </>
   );
 }

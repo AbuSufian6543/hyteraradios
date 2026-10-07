@@ -13,6 +13,7 @@ import { calcOrderTax, resolveTaxRules } from "@/lib/tax-rules";
 import { formatItemFrequency } from "@/lib/order-item-frequency";
 import { resolveCartDiscount } from "@/lib/coupons";
 import { CartCoupon } from "@/components/cart/cart-coupon";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export default async function CartPage() {
   const [cart, currency, session] = await Promise.all([
@@ -60,9 +61,13 @@ export default async function CartPage() {
   const totalCents = discountedSubtotal + shippingCents + tax.taxCents;
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Your order"
+        title="Your Cart"
+        description="Review the radios and accessories in your order before checkout."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Your Cart</h1>
-
       {lines.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-slate-300 p-12 text-center">
           <p className="text-slate-600">Your cart is empty.</p>
@@ -180,5 +185,6 @@ export default async function CartPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

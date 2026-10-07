@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { cacheGet, cacheSet } from "@/lib/cache";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export const metadata: Metadata = {
   title: "Featured",
@@ -30,12 +31,13 @@ export default async function FeaturedPage() {
   const items = await getFeaturedItems();
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Handpicked for you"
+        title="Featured"
+        description="Highlights from our product lineup and industry solutions."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Featured</h1>
-      <p className="mt-2 text-slate-600 dark:text-slate-300">
-        Highlights from our product lineup and industry solutions.
-      </p>
-
       {items.length === 0 ? (
         <p className="mt-10 text-center text-slate-500">No featured items yet.</p>
       ) : (
@@ -76,5 +78,6 @@ export default async function FeaturedPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

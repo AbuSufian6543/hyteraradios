@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { DealerHeroNote } from "@/components/layout/authorized-dealer-notice";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 import { PARENT_COMPANY, PARENT_COMPANY_URL, SITE_DOMAIN, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -12,9 +13,14 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Who we are"
+        title={`About ${SITE_NAME}`}
+        description="Professional two-way radio and communication solutions for teams across Canada and the US."
+      />
     <div className="container-page py-12">
-      <h1 className="section-title">About {SITE_NAME}</h1>
-      <div className="prose-store mt-8 max-w-3xl space-y-4">
+      <div className="prose-store max-w-3xl space-y-4">
         <p>
           {SITE_NAME} delivers professional two-way radio and communication
           solutions for businesses across hospitality, retail, healthcare,
@@ -42,5 +48,6 @@ export default function AboutPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

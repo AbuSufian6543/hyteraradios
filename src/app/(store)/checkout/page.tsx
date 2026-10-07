@@ -9,6 +9,7 @@ import { getShippingCentsForCountry } from "@/lib/shipping";
 import { calcOrderTax, resolveTaxRules } from "@/lib/tax-rules";
 import { getSiteSettings } from "@/lib/site-settings";
 import { resolveCartDiscount } from "@/lib/coupons";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export default async function CheckoutPage() {
   const session = await auth();
@@ -78,9 +79,14 @@ export default async function CheckoutPage() {
   const totalCents = discountedSubtotal + shippingCents + tax.taxCents;
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Your order"
+        title="Checkout"
+        description="Shipping, payment, and a final look at the order."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Checkout</h1>
-      <div className="mt-8">
+      <div>
         <CheckoutClient
           currency={currency}
           subtotalCents={subtotalCents}
@@ -110,5 +116,6 @@ export default async function CheckoutPage() {
         />
       </div>
     </div>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
 import { COMPARE_COOKIE, parseCompareCookie } from "@/lib/compare";
 import { CompareView, type CompareProductData } from "@/components/compare/compare-view";
+import { StorePageHeader } from "@/components/layout/store-page-header";
 
 export const dynamic = "force-dynamic";
 
@@ -53,13 +54,19 @@ export default async function ComparePage() {
     .filter((p): p is (typeof products)[number] => Boolean(p));
 
   return (
+    <>
+      <StorePageHeader
+        eyebrow="Side by side"
+        title="Compare Products"
+        description="Line up radios and see the differences before you buy."
+      />
     <div className="container-page py-10">
-      <h1 className="section-title">Compare Products</h1>
       <CompareView
         products={ordered}
         attributes={attributes}
         currency={currency}
       />
     </div>
+    </>
   );
 }
