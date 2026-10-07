@@ -15,7 +15,7 @@ import {
 import { SITE_PHONE } from "@/lib/constants";
 import { setCurrencyAction } from "@/app/actions/currency";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { DealerMark } from "@/components/layout/authorized-dealer-notice";
+import { DealerDrawerNote, DealerMark } from "@/components/layout/authorized-dealer-notice";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { Avatar } from "@/components/ui/avatar";
 
@@ -345,6 +345,8 @@ export function Header({
                 </div>
               </div>
             ) : null}
+
+            <DealerDrawerNote />
           </div>
         </div>
       )}
