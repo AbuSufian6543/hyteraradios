@@ -72,7 +72,7 @@ export default async function CartPage() {
         <div className="mt-8 rounded-xl border border-dashed border-slate-300 p-12 text-center">
           <p className="text-slate-600">Your cart is empty.</p>
           <Button className="mt-4" asChild>
-            <Link href="/search">Browse Products</Link>
+            <Link href="/products">Browse Products</Link>
           </Button>
         </div>
       ) : (

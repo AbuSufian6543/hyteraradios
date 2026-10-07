@@ -26,6 +26,10 @@ import {
   type Currency,
 } from "@/lib/currency";
 import { parseVideoEmbedUrl } from "@/lib/video";
+import {
+  ProductBuyingFacts,
+  type ProductBuyingFactsData,
+} from "@/components/products/product-buying-facts";
 
 type Variant = {
   id: string;
@@ -85,6 +89,7 @@ type ProductDetailClientProps = {
     allowBackorder?: boolean;
     youtubeUrl?: string | null;
   };
+  facts: ProductBuyingFactsData;
   options: Option[];
   variants: Variant[];
   reviews: Review[];
@@ -146,6 +151,7 @@ function CustomFrequencyFields({
 
 export function ProductDetailClient({
   product,
+  facts,
   options,
   variants,
   reviews,
@@ -377,6 +383,8 @@ export function ProductDetailClient({
             </span>
           </div>
 
+          <ProductBuyingFacts facts={facts} />
+
           <div className="my-6 h-px bg-slate-200" />
 
           {/* Option groups */}
@@ -585,14 +593,18 @@ export function ProductDetailClient({
           {/* Trust row */}
           <div className="mt-7 grid grid-cols-3 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
             {[
-              { icon: Truck, label: "Fast Shipping" },
-              { icon: ShieldCheck, label: "1-Yr Warranty" },
-              { icon: Headphones, label: "Expert Support" },
+              { icon: Truck, label: "Free Shipping", href: "/shipping" },
+              { icon: ShieldCheck, label: "1-Year Warranty", href: "/warranty" },
+              { icon: Headphones, label: "Expert Support", href: "/contact" },
             ].map((t) => (
-              <div key={t.label} className="flex flex-col items-center gap-1.5">
+              <Link
+                key={t.label}
+                href={t.href}
+                className="flex flex-col items-center gap-1.5 rounded-lg hover:text-blue-600"
+              >
                 <t.icon className="h-5 w-5 text-blue-600" />
                 <span className="text-xs font-medium text-slate-600">{t.label}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

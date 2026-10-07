@@ -18,7 +18,7 @@ export function SearchForm({ initialQuery = "" }: { initialQuery?: string }) {
       const q = query.trim();
       const current = initialQuery.trim();
       if (q === current) return;
-      router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+      router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/products");
     }, 300);
     return () => clearTimeout(timer);
   }, [query, initialQuery, router]);
@@ -26,7 +26,7 @@ export function SearchForm({ initialQuery = "" }: { initialQuery?: string }) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const q = query.trim();
-    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/products");
   }
 
   return (

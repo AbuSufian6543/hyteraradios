@@ -7,10 +7,11 @@ export const dynamic = "force-dynamic";
 const STATIC_PATHS: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
   { path: "/", priority: 1, changeFrequency: "daily" },
   { path: "/featured", priority: 0.7, changeFrequency: "weekly" },
-  { path: "/search", priority: 0.5, changeFrequency: "weekly" },
+  { path: "/products", priority: 0.9, changeFrequency: "daily" },
   { path: "/about", priority: 0.5, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
   { path: "/shipping", priority: 0.4, changeFrequency: "monthly" },
+  { path: "/warranty", priority: 0.4, changeFrequency: "monthly" },
   { path: "/stay-connected", priority: 0.4, changeFrequency: "monthly" },
 ];
 

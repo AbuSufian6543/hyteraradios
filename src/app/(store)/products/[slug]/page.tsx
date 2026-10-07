@@ -7,7 +7,9 @@ import { auth } from "@/lib/auth";
 import { getProductReviewEligibility, getReviewStatsByProductIds } from "@/lib/product-reviews";
 import { getCurrency } from "@/lib/currency-server";
 import { getProductPrice } from "@/lib/currency";
-import { getRelatedProducts } from "@/lib/related-products";
+import { getCompatibleProducts, getRelatedProducts } from "@/lib/related-products";
+import { productFitNote } from "@/lib/buying-guides";
+import { ProductBuyingFacts } from "@/components/products/product-buying-facts";
 import { absoluteUrl } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { StorePageHeader } from "@/components/layout/store-page-header";
@@ -95,6 +97,9 @@ export default async function ProductPage({
         },
       },
       categories: { include: { category: true } },
+      industries: { include: { industry: true } },
+      signalTypes: { include: { signalType: true } },
+      frequencyBands: { include: { frequencyBand: true } },
       reviews: { orderBy: { createdAt: "desc" }, take: 5 },
     },
   });
@@ -108,7 +113,10 @@ export default async function ProductPage({
 
   const initialTab = sp.tab === "reviews" ? ("reviews" as const) : undefined;
 
-  const related = await getRelatedProducts(product.id);
+  const [related, pairsWith] = await Promise.all([
+    getRelatedProducts(product.id),
+    getCompatibleProducts(product.id),
+  ]);
   const relatedReviewStats = await getReviewStatsByProductIds(related.map((p) => p.id));
   const primaryCategory = product.categories[0]?.category;
 
@@ -180,7 +188,7 @@ export default async function ProductPage({
           </>
         ) : (
           <>
-            <Link href="/search" className="hover:text-blue-600">
+            <Link href="/products" className="hover:text-blue-600">
               Products
             </Link>
             {" / "}
@@ -192,6 +200,32 @@ export default async function ProductPage({
     <div className="container-page py-10">
       <ProductDetailClient
         product={product}
+        facts={{
+          fitNote: productFitNote(product.categories.map((item) => item.category.slug))?.note ?? null,
+          categories: product.categories.map((item) => ({
+            name: item.category.name,
+            slug: item.category.slug,
+          })),
+          industries: product.industries.map((item) => ({
+            name: item.industry.name,
+            slug: item.industry.slug,
+          })),
+          signalTypes: product.signalTypes.map((item) => item.signalType.name),
+          frequencyBands: product.frequencyBands.map((item) => item.frequencyBand.name),
+          pairsWith,
+          programming:
+            product.frequencyOptions.length > 0 ||
+            product.allowCustomFrequency ||
+            product.options.some(
+              (option) =>
+                /program|frequency/i.test(option.name) ||
+                option.values.some((value) => /frequency/i.test(value.value)),
+            ),
+          accessoryOnly:
+            product.categories.length > 0 &&
+            product.categories.every((item) => item.category.slug === "accessories"),
+          quoteHref: `/stay-connected?product=${encodeURIComponent(product.name)}`,
+        }}
         options={product.options}
         variants={product.variants}
         reviews={product.reviews}

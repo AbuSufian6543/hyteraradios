@@ -118,3 +118,15 @@ export async function getRelatedProducts(
 
   return results.length >= MIN_RELATED ? results : [];
 }
+
+export async function getCompatibleProducts(productId: string) {
+  const rows = await prisma.compatibleProduct.findMany({
+    where: { productId, compatibleProduct: { status: "ACTIVE" } },
+    orderBy: { position: "asc" },
+    take: 4,
+    select: {
+      compatibleProduct: { select: { name: true, slug: true } },
+    },
+  });
+  return rows.map((row) => row.compatibleProduct);
+}

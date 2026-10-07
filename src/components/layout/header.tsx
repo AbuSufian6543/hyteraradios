@@ -100,7 +100,7 @@ export function Header({
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
     const q = query.trim();
-    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/products");
     setMobileOpen(false);
   }
 
@@ -209,7 +209,7 @@ export function Header({
       >
         <div className="container-page flex items-center gap-1">
           <Link
-            href="/search"
+            href="/products"
             className="px-4 py-3 text-sm font-semibold text-slate-700 transition-colors duration-200 hover:text-blue-600"
           >
             All Products
@@ -310,7 +310,14 @@ export function Header({
               onNavigate={() => setMobileOpen(false)}
             />
 
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            <Link
+              href="/products"
+              onClick={() => setMobileOpen(false)}
+              className="block rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white"
+            >
+              All Products
+            </Link>
+            <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/about"
                 onClick={() => setMobileOpen(false)}
@@ -324,6 +331,20 @@ export function Header({
                 className="rounded-lg bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700"
               >
                 Contact
+              </Link>
+              <Link
+                href="/shipping"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700"
+              >
+                Shipping
+              </Link>
+              <Link
+                href="/warranty"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg bg-slate-50 px-3 py-2.5 text-sm font-semibold text-slate-700"
+              >
+                Warranty
               </Link>
             </div>
 

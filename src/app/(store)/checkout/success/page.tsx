@@ -55,7 +55,7 @@ export default async function CheckoutSuccessPage({
         )}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Button asChild>
-            <Link href="/search">Continue Shopping</Link>
+            <Link href="/products">Continue Shopping</Link>
           </Button>
           <Button variant="outline" asChild>
             <Link href="/account/orders">View Orders</Link>

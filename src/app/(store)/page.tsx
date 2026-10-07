@@ -120,10 +120,10 @@ export default async function HomePage() {
   const reviewStats = await getReviewStatsByProductIds(featuredProductIds);
 
   const valueProps = [
-    { icon: Truck, title: "Fast Free Shipping", desc: "On all qualifying orders across the US & Canada." },
-    { icon: ShieldCheck, title: "1-Year Warranty", desc: "Every radio is backed by our satisfaction guarantee." },
-    { icon: Headphones, title: "Expert Programming", desc: "We configure channels and roles to match your fleet." },
-    { icon: Globe, title: "Nationwide Range", desc: "PoC over LTE + Wi-Fi keeps teams connected anywhere." },
+    { icon: Truck, title: "Free Shipping", desc: "On qualifying orders shipped to Canada and the United States.", href: "/shipping" },
+    { icon: ShieldCheck, title: "1-Year Warranty", desc: "Radios are covered against defects in normal use.", href: "/warranty" },
+    { icon: Headphones, title: "Expert Programming", desc: "We set channels to match your fleet before the radio ships.", href: "/contact" },
+    { icon: Globe, title: "Nationwide Range", desc: "PoC over LTE and Wi-Fi keeps teams connected away from the site.", href: "/categories/nationwide-radios" },
   ];
 
   const stats = [
@@ -156,7 +156,7 @@ export default async function HomePage() {
             <DealerHeroNote className="mt-6" />
             <div className="mt-8 flex flex-wrap gap-3">
               <Button size="lg" asChild>
-                <Link href="/search">
+                <Link href="/products">
                   Shop All Radios <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -192,17 +192,19 @@ export default async function HomePage() {
             <Reveal
               key={vp.title}
               delay={i * 90}
-              className="flex items-start gap-4 bg-white px-2 py-8 lg:px-6 dark:bg-slate-900"
+              className="bg-white dark:bg-slate-900"
             >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 transition-transform duration-300 hover:scale-110 dark:bg-blue-950">
-                <vp.icon className="h-5 w-5" />
-              </span>
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white">{vp.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                  {vp.desc}
-                </p>
-              </div>
+              <Link href={vp.href} className="group flex items-start gap-4 px-2 py-8 lg:px-6">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950">
+                  <vp.icon className="h-5 w-5" />
+                </span>
+                <span>
+                  <span className="block font-bold text-slate-900 transition group-hover:text-blue-600 dark:text-white">{vp.title}</span>
+                  <span className="mt-1 block text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                    {vp.desc}
+                  </span>
+                </span>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -218,7 +220,7 @@ export default async function HomePage() {
             <h2 className="section-title mt-2">Featured Products</h2>
           </div>
           <Link
-            href="/search"
+            href="/products"
             className="group inline-flex items-center gap-1 text-sm font-semibold text-blue-600"
           >
             View all products
@@ -263,8 +265,8 @@ export default async function HomePage() {
             <p className="eyebrow">Find the right gear</p>
             <h2 className="section-title mt-2">Shop by Category</h2>
             <p className="mx-auto mt-3 max-w-2xl text-slate-600 dark:text-slate-300">
-              From compact business radios to professional MOTOTRBO portfolios —
-              there&apos;s a solution for every team.
+              From compact business handhelds to mobile radios and nationwide PoC —
+              there is a Hytera solution for every team.
             </p>
           </Reveal>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -315,7 +317,7 @@ export default async function HomePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/search">Browse Catalog</Link>
+                <Link href="/products">Browse Catalog</Link>
               </Button>
             </div>
           </div>

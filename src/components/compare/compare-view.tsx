@@ -47,7 +47,7 @@ export function CompareView({
           You haven&apos;t selected any products to compare yet.
         </p>
         <Button className="mt-4" asChild>
-          <Link href="/search">Browse Products</Link>
+          <Link href="/products">Browse Products</Link>
         </Button>
       </div>
     );

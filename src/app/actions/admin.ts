@@ -342,6 +342,7 @@ export async function saveProductAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/search");
+  revalidatePath("/products");
   revalidatePath(`/products/${slug}`);
   revalidatePath("/admin/products");
   redirect(`/admin/products/${productId}/edit?saved=1`);

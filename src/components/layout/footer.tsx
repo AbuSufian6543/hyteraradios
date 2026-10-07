@@ -52,10 +52,10 @@ export function Footer({
   logoUrl?: string | null;
 } = {}) {
   const trust = [
-    { icon: Truck, label: "Fast Free Shipping" },
-    { icon: ShieldCheck, label: "1-Year Warranty" },
-    { icon: Headphones, label: "Expert Support" },
-    { icon: CreditCard, label: "Secure Checkout" },
+    { icon: Truck, label: "Free Shipping", href: "/shipping" },
+    { icon: ShieldCheck, label: "1-Year Warranty", href: "/warranty" },
+    { icon: Headphones, label: "Expert Support", href: "/contact" },
+    { icon: CreditCard, label: "Secure Checkout", href: "/cart" },
   ];
 
   return (
@@ -64,12 +64,12 @@ export function Footer({
       <div className="border-b border-slate-200 bg-white">
         <div className="container-page grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
           {trust.map((t) => (
-            <div key={t.label} className="flex items-center gap-3">
+            <Link key={t.label} href={t.href} className="flex items-center gap-3 transition hover:text-blue-600">
               <span className="grid h-10 w-10 place-items-center rounded-lg bg-blue-50 text-blue-600">
                 <t.icon className="h-5 w-5" />
               </span>
               <span className="text-sm font-semibold text-slate-900">{t.label}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -119,7 +119,7 @@ export function Footer({
             <li><Link href="/categories/commercial-radios" className="transition hover:text-blue-600">Commercial Radios</Link></li>
             <li><Link href="/categories/nationwide-radios" className="transition hover:text-blue-600">Nationwide Radios</Link></li>
             <li><Link href="/categories/accessories" className="transition hover:text-blue-600">Accessories</Link></li>
-            <li><Link href="/search" className="transition hover:text-blue-600">All Products</Link></li>
+            <li><Link href="/products" className="transition hover:text-blue-600">All Products</Link></li>
           </ul>
         </div>
 
@@ -130,6 +130,7 @@ export function Footer({
           <ul className="space-y-3 text-sm">
             <li><Link href="/contact" className="transition hover:text-blue-600">Contact Us</Link></li>
             <li><Link href="/shipping" className="transition hover:text-blue-600">Shipping Policy</Link></li>
+            <li><Link href="/warranty" className="transition hover:text-blue-600">Warranty</Link></li>
             <li><Link href="/about" className="transition hover:text-blue-600">About Us</Link></li>
             <li><Link href="/account" className="transition hover:text-blue-600">My Account</Link></li>
             <li><Link href="/account/orders" className="transition hover:text-blue-600">Order History</Link></li>
@@ -204,6 +205,7 @@ export function Footer({
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <Link href="/shipping" className="transition hover:text-blue-600">Shipping</Link>
+            <Link href="/warranty" className="transition hover:text-blue-600">Warranty</Link>
             <Link href="/contact" className="transition hover:text-blue-600">Contact</Link>
             <Link href="/stay-connected" className="transition hover:text-blue-600">Get a Quote</Link>
             <span>{dualCurrency ? "CAD / USD" : "CAD"}</span>

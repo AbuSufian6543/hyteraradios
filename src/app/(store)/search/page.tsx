@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ProductCard } from "@/components/products/product-card";
 import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
@@ -29,8 +31,9 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const { q = "", page = "1" } = await searchParams;
-  const currency = await getCurrency();
   const query = q.trim();
+  if (!query) redirect("/products");
+  const currency = await getCurrency();
   const pageNum = Math.max(1, Number(page) || 1);
   const perPage = 24;
   const skip = (pageNum - 1) * perPage;
@@ -72,9 +75,12 @@ export default async function SearchPage({
       </StorePageHeader>
     <div className="container-page py-10">
       <p className="text-sm text-slate-600">
-        {total} product{total === 1 ? "" : "s"} found
-        {query ? ` for "${query}"` : ""}
+        {total} product{total === 1 ? "" : "s"} found for &ldquo;{query}&rdquo;
         {totalPages > 1 && ` · Page ${pageNum} of ${totalPages}`}
+        {" · "}
+        <Link href="/products" className="font-semibold text-blue-600 hover:underline">
+          Browse the catalog
+        </Link>
       </p>
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((product) => (

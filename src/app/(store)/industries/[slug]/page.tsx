@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/products/product-card";
 import { StorePageHeader } from "@/components/layout/store-page-header";
+import { BuyingGuide } from "@/components/catalog/buying-guide";
+import { CatalogHelp } from "@/components/catalog/catalog-help";
 import { prisma } from "@/lib/prisma";
 import { getCurrency } from "@/lib/currency-server";
 import { getReviewStatsByProductIds } from "@/lib/product-reviews";
@@ -65,6 +67,7 @@ export default async function IndustryPage({
         description={industry.description ?? undefined}
       />
     <div className="container-page py-10">
+      <BuyingGuide kind="industry" slug={industry.slug} />
       {products.length === 0 ? (
         <p className="text-slate-600">No products for this industry yet.</p>
       ) : (
@@ -79,6 +82,7 @@ export default async function IndustryPage({
           ))}
         </div>
       )}
+      <CatalogHelp />
     </div>
     </>
   );
