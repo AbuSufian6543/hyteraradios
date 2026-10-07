@@ -108,7 +108,11 @@ export default async function CheckoutPage() {
             postal: profile?.addressPostal ?? "",
             country: defaultCountry,
           }}
-          paypalClientId={process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? ""}
+          paypalClientId={
+            settings.paypalEnabled
+              ? (process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "")
+              : ""
+          }
           offlineMethods={{
             cash: settings.cashOnPickupEnabled,
             interac: settings.interacEnabled,

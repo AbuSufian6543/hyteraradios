@@ -9,6 +9,7 @@ import {
   PAYMENT_METHODS,
   SITE_NAME,
 } from "@/lib/constants";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -17,7 +18,14 @@ export const metadata: Metadata = {
   openGraph: { type: "website", title: "Contact Us", url: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+  const paymentMethods = [
+    ...(settings.paypalEnabled ? [...PAYMENT_METHODS] : []),
+    ...(settings.cashOnPickupEnabled ? ["cash on pickup"] : []),
+    ...(settings.interacEnabled ? ["Interac e-Transfer"] : []),
+  ];
+
   return (
     <>
       <StorePageHeader
@@ -54,7 +62,10 @@ export default function ContactPage() {
               </a>
             </li>
             <li>
-              <strong>Payments:</strong> We accept {PAYMENT_METHODS.join(", ")}.
+              <strong>Payments:</strong>{" "}
+              {paymentMethods.length > 0
+                ? `We accept ${paymentMethods.join(", ")}.`
+                : "Contact us to arrange payment."}
             </li>
           </ul>
         </div>

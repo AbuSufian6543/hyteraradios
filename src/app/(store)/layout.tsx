@@ -62,6 +62,7 @@ export default async function StoreLayout({
           dualCurrency={settings.dualCurrencyEnabled}
           proudlyCanadianEnabled={settings.proudlyCanadianEnabled}
           logoUrl={settings.siteLogoUrl}
+          paypalEnabled={settings.paypalEnabled}
         />
         {settings.whatsappEnabled && settings.whatsappNumber && (
           <WhatsAppWidget

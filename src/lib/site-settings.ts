@@ -29,6 +29,7 @@ export type SiteSettings = {
   interacEnabled: boolean;
   interacEmail: string | null;
   interacInstructions: string | null;
+  paypalEnabled: boolean;
   fraudHighValueCents: number;
   updatedAt: Date;
 };

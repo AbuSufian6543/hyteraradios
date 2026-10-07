@@ -223,6 +223,21 @@ export async function updateSiteSettingsAction(formData: FormData) {
       entityId: "singleton",
       summary: `WhatsApp chat ${whatsappEnabled ? "enabled" : "disabled"}`,
     });
+  } else if (section === "paypal") {
+    const paypalEnabled = formData.get("paypalEnabled") === "on";
+
+    await prisma.siteSettings.upsert({
+      where: { id: "singleton" },
+      update: { paypalEnabled },
+      create: { id: "singleton", paypalEnabled },
+    });
+    await recordAudit({
+      actor,
+      action: "SETTING",
+      entityType: "SiteSettings",
+      entityId: "singleton",
+      summary: `PayPal checkout ${paypalEnabled ? "enabled" : "disabled"}`,
+    });
   } else if (section === "offline-payments") {
     const cashOnPickupEnabled = formData.get("cashOnPickupEnabled") === "on";
     const cashPickupInstructions =

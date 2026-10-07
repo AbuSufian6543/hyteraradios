@@ -256,6 +256,11 @@ export async function createCheckoutOrderAction(formData: FormData) {
     return { error: limited };
   }
 
+  const settings = await getSiteSettings();
+  if (!settings.paypalEnabled) {
+    return { error: "PayPal checkout is turned off." };
+  }
+
   const built = await buildOrderDraft(formData);
   if ("error" in built) return { error: built.error };
   const { draft } = built;

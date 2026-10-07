@@ -530,6 +530,7 @@ model SiteSettings {
   interacEnabled         Boolean @default(false)
   interacEmail           String?
   interacInstructions    String?
+  paypalEnabled          Boolean @default(true)
   fraudHighValueCents    Int      @default(150000)
   updatedAt             DateTime @updatedAt
 }

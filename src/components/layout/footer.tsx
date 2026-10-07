@@ -46,10 +46,12 @@ export function Footer({
   dualCurrency = true,
   proudlyCanadianEnabled = true,
   logoUrl,
+  paypalEnabled = true,
 }: {
   dualCurrency?: boolean;
   proudlyCanadianEnabled?: boolean;
   logoUrl?: string | null;
+  paypalEnabled?: boolean;
 } = {}) {
   const trust = [
     { icon: Truck, label: "Free Shipping", href: "/shipping" },
@@ -188,7 +190,7 @@ export function Footer({
           <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Secure Payments
           </p>
-          <PaymentLogos />
+          <PaymentLogos showPayPal={paypalEnabled} />
         </div>
       </div>
 

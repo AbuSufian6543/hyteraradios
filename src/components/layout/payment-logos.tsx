@@ -56,12 +56,12 @@ function PayPalLogo() {
   );
 }
 
-export function PaymentLogos() {
+export function PaymentLogos({ showPayPal = true }: { showPayPal?: boolean }) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
       <VisaLogo />
       <MastercardLogo />
-      <PayPalLogo />
+      {showPayPal ? <PayPalLogo /> : null}
     </div>
   );
 }

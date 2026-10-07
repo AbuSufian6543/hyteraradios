@@ -109,6 +109,7 @@ export function SettingsForms({
   const [tab, setTab] = useState<TabId>("currency");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [paypalOn, setPaypalOn] = useState(settings.paypalEnabled);
 
   async function handleBranding(formData: FormData) {
     setMessage(null);
@@ -268,10 +269,30 @@ export function SettingsForms({
             PayPal
           </h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            PayPal credentials are configured in the server <code>.env</code> file
-            (never editable here for security). After updating them, restart the app
-            container. This panel only shows whether each value is present.
+            PayPal credentials stay in the server environment file. This switch
+            only shows or hides PayPal and card checkout. Cash and Interac are
+            controlled below.
           </p>
+
+          <form action={handleSettings} className="mt-5 rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+            <input type="hidden" name="section" value="paypal" />
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+              <input
+                type="checkbox"
+                name="paypalEnabled"
+                checked={paypalOn}
+                onChange={(event) => setPaypalOn(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Enable PayPal payment
+            </label>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              When this is off, customers do not see PayPal or card checkout.
+            </p>
+            <div className="mt-4 flex justify-end">
+              <Button type="submit">Save PayPal setting</Button>
+            </div>
+          </form>
 
           <div className="mt-5 space-y-3">
             <StatusRow label="PAYPAL_CLIENT_ID (server)" ok={paypalStatus.clientIdSet} />
@@ -304,9 +325,16 @@ export function SettingsForms({
           {paypalStatus.clientIdSet &&
           paypalStatus.secretSet &&
           paypalStatus.publicClientIdSet ? (
-            <p className="mt-5 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
-              PayPal is fully configured. Checkout should display the PayPal button.
-            </p>
+            paypalOn ? (
+              <p className="mt-5 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+                PayPal is on. Checkout shows the PayPal button.
+              </p>
+            ) : (
+              <p className="mt-5 rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                PayPal credentials are set, and PayPal is turned off. Customers will
+                not see it at checkout.
+              </p>
+            )
           ) : (
             <p className="mt-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
               PayPal is not fully configured. Set the missing keys in <code>.env</code>{" "}
