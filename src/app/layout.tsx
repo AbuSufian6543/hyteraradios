@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME, SITE_TAGLINE, SITE_EMAIL, SITE_PHONE } from "@/lib/constants";
-import { ThemeProvider } from "@/components/theme-provider";
 import { getSiteSettings } from "@/lib/site-settings";
 import { resolveFaviconUrl } from "@/lib/site-favicon";
 import { absoluteUrl, getSiteUrl } from "@/lib/seo";
@@ -88,12 +87,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <body className="flex min-h-full flex-col bg-white text-slate-900">
         <JsonLd data={[organizationLd, websiteLd]} />
-        <ThemeProvider>{children}</ThemeProvider>
+        {children}
       </body>
     </html>
   );

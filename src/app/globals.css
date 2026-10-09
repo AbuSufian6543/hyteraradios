@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* The storefront is light only. This stops dark: styles from following the system theme. */
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
+
+html {
+  color-scheme: light;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
